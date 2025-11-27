@@ -10,6 +10,9 @@ import ProductDetailSkeleton from "@/components/ProductDetailSkeleton";
 import { useUserStore } from "@/stores/user-store";
 import { useAddToCart } from "@/queries/useCart";
 import { useAccountQuery } from "@/queries/useAuth";
+import TopProductsSection from "@/components/TopProductsSection";
+import { useAIRecommendStore } from "@/stores/ai-recommend-store";
+import { useAIFeedback } from "@/queries/useDashboard";
 
 export default function ProductDetailClient({ id }: { id: number }) {
     const router = useRouter();
@@ -24,6 +27,11 @@ export default function ProductDetailClient({ id }: { id: number }) {
     const { refetch: refetchAccount } = useAccountQuery();
     const { mutate: addToCart, isPending: isAdding } = useAddToCart();
 
+    // AI Feedback
+    const isRecommended = useAIRecommendStore((state) => state.isRecommended);
+    const getProductPosition = useAIRecommendStore((state) => state.getProductPosition);
+    const feedbackMutation = useAIFeedback();
+
     const [quantity, setQuantity] = useState(1);
     const [activeImage, setActiveImage] = useState<string | null>(null);
 
@@ -33,6 +41,22 @@ export default function ProductDetailClient({ id }: { id: number }) {
             if (type === "plus") return prev + 1;
             return prev;
         });
+    };
+
+    // Gọi feedback addtocart nếu sản phẩm được recommend từ AI
+    const sendAddToCartFeedback = (productId: number) => {
+        const customerId = user?.customer?.id;
+        if (customerId && isRecommended(productId)) {
+            const position = getProductPosition(productId);
+            if (position) {
+                feedbackMutation.mutate({
+                    customerId: customerId,
+                    action: productId,
+                    position: position,
+                    even_type: "addtocart",
+                });
+            }
+        }
     };
 
     const handleAddToCart = () => {
@@ -56,6 +80,8 @@ export default function ProductDetailClient({ id }: { id: number }) {
             {
                 onSuccess: async () => {
                     await refetchAccount();
+                    // Gọi feedback nếu sản phẩm được recommend từ AI
+                    sendAddToCartFeedback(product.id);
                 },
             }
         );
@@ -82,6 +108,8 @@ export default function ProductDetailClient({ id }: { id: number }) {
             {
                 onSuccess: async () => {
                     await refetchAccount();
+                    // Gọi feedback nếu sản phẩm được recommend từ AI
+                    sendAddToCartFeedback(product.id);
                     router.push("/order");
                 },
             }
@@ -267,6 +295,16 @@ export default function ProductDetailClient({ id }: { id: number }) {
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* Top 5 / AI Recommendation */}
+            <div className="max-w-screen-xl mx-auto mt-10">
+                <TopProductsSection
+                    variant="vertical"
+                    title="Có thể bạn cũng thích"
+                    position="cart"
+                    maxDisplay={5}
+                />
             </div>
         </section>
     );
