@@ -19,6 +19,7 @@ import { ProductType } from "@/schemaValidations/product.schema";
 interface ProductListProps {
     filters: {
         filter: {
+            productTypes?: string[];
             category?: string[];
             price_min?: number;
             price_max?: number;
@@ -33,7 +34,8 @@ export default function ProductList({ filters }: ProductListProps) {
     const [sortQuery, setSortQuery] = useState("sold,desc");
 
     let query = `page=${page}&size=${pageSize}`;
-    const { category, price_min, price_max, searchTerm } = filters.filter;
+    const { productTypes, category, price_min, price_max, searchTerm } =
+        filters.filter;
     const filterParts: string[] = [];
 
     if (price_min && price_max) {
@@ -44,6 +46,15 @@ export default function ProductList({ filters }: ProductListProps) {
         filterParts.push(`price<:${price_max}`);
     }
 
+    // Lọc theo danh mục sản phẩm (product types) - có thể chọn nhiều
+    if (productTypes?.length) {
+        const types = productTypes
+            .map((t) => `productType.name~'${t}'`)
+            .join(" or ");
+        filterParts.push(`(${types})`);
+    }
+
+    // Lọc theo thể loại sách (category/genre) - chỉ áp dụng khi chọn Sách
     if (category?.length) {
         const cats = category.map((c) => `category.name~'${c}'`).join(" or ");
         filterParts.push(`(${cats})`);

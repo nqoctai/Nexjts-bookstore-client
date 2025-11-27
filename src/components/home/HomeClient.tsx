@@ -16,10 +16,12 @@ import { useSearchStore } from "@/stores/search-store";
 import useDebounce from "@/hooks/useDebounce";
 import { ProductFilter } from "@/components/books";
 import ProductList from "@/components/books/BookList";
+import TopProductsSection from "@/components/TopProductsSection";
 
-interface FilterState {
+export interface FilterState {
     filter: {
-        category?: string[];
+        productTypes?: string[]; // Danh mục sản phẩm (Sách, Laptop, ...) - có thể chọn nhiều
+        category?: string[]; // Thể loại sách (chỉ hiển thị khi chọn Sách)
         price_min?: number;
         price_max?: number;
         searchTerm?: string;
@@ -32,6 +34,7 @@ export default function HomeClient() {
 
     const [filters, setFilters] = useState<FilterState>({
         filter: {
+            productTypes: [],
             category: [],
             price_min: undefined,
             price_max: undefined,
@@ -88,6 +91,16 @@ export default function HomeClient() {
                 <main className="lg:col-span-9">
                     <ProductList filters={filters} />
                 </main>
+            </div>
+
+            {/* Top 5 / AI Recommendation */}
+            <div className="max-w-screen-xl mx-auto px-4 pb-12">
+                <TopProductsSection
+                    variant="vertical"
+                    title="Gợi ý cho bạn"
+                    position="home"
+                    maxDisplay={5}
+                />
             </div>
         </>
     );

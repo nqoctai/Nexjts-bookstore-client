@@ -14,6 +14,8 @@ import { useRouter } from "next/navigation";
 import { useAccountQuery } from "@/queries/useAuth";
 import { useUserStore } from "@/stores/user-store";
 import { useCreateOrder } from "@/queries/useOrder";
+import { useAIRecommendStore } from "@/stores/ai-recommend-store";
+import { useAIFeedback } from "@/queries/useDashboard";
 
 interface CheckoutFormProps {
     totalPrice: number;
@@ -34,6 +36,12 @@ export default function CheckoutForm({
     const { refetch: refetchAccount } = useAccountQuery();
     const { data, isLoading } = usePromotionsQuery();
     const { mutate: createOrder, isPending } = useCreateOrder();
+
+    // AI Feedback
+    const isRecommended = useAIRecommendStore((state) => state.isRecommended);
+    const getProductPosition = useAIRecommendStore((state) => state.getProductPosition);
+    const clearRecommendedProducts = useAIRecommendStore((state) => state.clearRecommendedProducts);
+    const feedbackMutation = useAIFeedback();
 
     const promotions = data?.data?.result || [];
 
@@ -70,6 +78,31 @@ export default function CheckoutForm({
         setFormData((prev) => ({ ...prev, [id]: value }));
     };
 
+    // Gọi feedback transaction cho các sản phẩm được recommend từ AI
+    const sendTransactionFeedback = () => {
+        const customerId = user?.customer?.id;
+        const cartItems = user?.customer?.cart?.cartItems || [];
+
+        if (customerId && cartItems.length > 0) {
+            cartItems.forEach((item) => {
+                const productId = item.product?.id;
+                if (productId && isRecommended(productId)) {
+                    const position = getProductPosition(productId);
+                    if (position) {
+                        feedbackMutation.mutate({
+                            customerId: customerId,
+                            action: productId,
+                            position: position,
+                            even_type: "transaction",
+                        });
+                    }
+                }
+            });
+            // Clear recommended products sau khi đã gửi feedback
+            clearRecommendedProducts();
+        }
+    };
+
     const handleSubmit = () => {
         if (!formData.name || !formData.phone || !formData.address) {
             toast.warning("Vui lòng nhập đầy đủ thông tin trước khi đặt hàng.");
@@ -99,6 +132,8 @@ export default function CheckoutForm({
         createOrder(payload, {
             onSuccess: async () => {
                 toast.success("🎉 Đặt hàng thành công!");
+                // Gọi feedback transaction cho các sản phẩm được recommend từ AI
+                sendTransactionFeedback();
                 await refetchAccount();
                 router.push("/history");
                 onNext?.();
