@@ -14,7 +14,7 @@ export const CreateOrderBody = z.object({
     email: z.string().email("Email không hợp lệ"),
     totalPrice: z.number().min(0, "Tổng tiền không hợp lệ"),
     promotionId: z.number().optional(),
-    paymentMethod: z.enum(["cod", "vnpay"]).refine((val) => !!val, {
+    paymentMethod: z.enum(["cod", "transfer"]).refine((val) => !!val, {
         message: "Vui lòng chọn phương thức thanh toán",
     }),
     vnp_txn_ref: z.string().optional(),
@@ -53,6 +53,8 @@ export const CreateOrderRes = z.object({
                 }),
             })
         ),
+        checkoutUrl: z.string().optional(),
+        qrCode: z.string().optional(),
     }),
     error: z.string().optional(),
 });

@@ -49,7 +49,7 @@ export default function CheckoutForm({
         name: "",
         phone: "",
         address: "",
-        payment: "cod" as "cod" | "vnpay",
+        payment: "cod" as "cod" | "transfer",
         promotionId: "",
     });
 
@@ -130,12 +130,16 @@ export default function CheckoutForm({
         };
 
         createOrder(payload, {
-            onSuccess: async () => {
+            onSuccess: async (res) => {
                 toast.success("🎉 Đặt hàng thành công!");
                 // Gọi feedback transaction cho các sản phẩm được recommend từ AI
                 sendTransactionFeedback();
                 await refetchAccount();
-                router.push("/history");
+                if (res?.payload?.data?.checkoutUrl) {
+                    window.location.href = res.payload.data.checkoutUrl;
+                } else {
+                    router.push("/history");
+                }
                 onNext?.();
             },
             onError: (error: any) => {
@@ -230,7 +234,7 @@ export default function CheckoutForm({
                         onValueChange={(val) =>
                             setFormData((prev) => ({
                                 ...prev,
-                                payment: val as "cod" | "vnpay",
+                                payment: val as "cod" | "transfer",
                             }))
                         }
                         className="mt-3 space-y-3"
@@ -247,12 +251,12 @@ export default function CheckoutForm({
 
                         <div className="flex items-center justify-between border rounded-lg p-3 cursor-pointer hover:bg-gray-50 transition">
                             <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="vnpay" id="vnpay" />
+                                <RadioGroupItem value="transfer" id="transfer" />
                                 <Label
-                                    htmlFor="vnpay"
+                                    htmlFor="transfer"
                                     className="cursor-pointer"
                                 >
-                                    Thanh toán qua VNPAY
+                                    Thanh toán qua ngân hàng (Chuyển khoản)
                                 </Label>
                             </div>
                             <CreditCard className="text-gray-500" size={18} />
