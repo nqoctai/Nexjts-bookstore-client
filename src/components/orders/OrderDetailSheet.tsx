@@ -23,34 +23,78 @@ export default function OrderDetailSheet({
     onClose,
     order,
 }: OrderDetailSheetProps) {
+    // Lấy màu cho từng trạng thái cụ thể
+    const getStatusStyles = (status: string) => {
+        switch (status) {
+            case "wait_confirm":
+                return {
+                    bg: "bg-amber-500",
+                    text: "text-amber-600",
+                    border: "border-amber-300",
+                };
+            case "processing":
+                return {
+                    bg: "bg-blue-500",
+                    text: "text-blue-600",
+                    border: "border-blue-300",
+                };
+            case "shipping":
+                return {
+                    bg: "bg-purple-500",
+                    text: "text-purple-600",
+                    border: "border-purple-300",
+                };
+            case "payment_completed":
+                return {
+                    bg: "bg-teal-500",
+                    text: "text-teal-600",
+                    border: "border-teal-300",
+                };
+            case "completed":
+                return {
+                    bg: "bg-green-500",
+                    text: "text-green-600",
+                    border: "border-green-300",
+                };
+            case "canceled":
+                return {
+                    bg: "bg-red-500",
+                    text: "text-red-600",
+                    border: "border-red-300",
+                };
+            case "returned":
+                return {
+                    bg: "bg-orange-500",
+                    text: "text-orange-600",
+                    border: "border-orange-300",
+                };
+            default:
+                return {
+                    bg: "bg-gray-400",
+                    text: "text-gray-600",
+                    border: "border-gray-300",
+                };
+        }
+    };
+
     const getStepColor = (
         status: string,
         currentIndex: number,
         index: number
     ) => {
-        if (status === "canceled") {
-            return "bg-red-500";
+        const styles = getStatusStyles(status);
+
+        // Bước hiện tại - màu đậm theo trạng thái
+        if (index === currentIndex) {
+            return styles.bg;
         }
 
-        if (currentIndex === index) {
-            switch (status) {
-                case "wait_confirm":
-                    return "bg-gray-500";
-                case "processing":
-                    return "bg-yellow-500";
-                case "shipping":
-                    return "bg-blue-500";
-                case "completed":
-                    return "bg-green-500";
-                default:
-                    return "bg-gray-400";
-            }
-        }
-
+        // Các bước đã qua - màu nhạt hơn
         if (index < currentIndex) {
-            return "bg-gray-300";
+            return "bg-gray-400";
         }
 
+        // Các bước chưa đến
         return "bg-gray-200";
     };
 
@@ -233,12 +277,18 @@ export default function OrderDetailSheet({
                                                     </div>
 
                                                     <div>
-                                                        <p className="font-medium text-gray-800">
+                                                        <p
+                                                            className={`font-medium ${
+                                                                i === currentIndex
+                                                                    ? getStatusStyles(status).text
+                                                                    : "text-gray-500"
+                                                            }`}
+                                                        >
                                                             {getStatusLabel(
                                                                 status
                                                             )}
                                                         </p>
-                                                        <p className="text-sm text-gray-500">
+                                                        <p className="text-sm text-gray-400">
                                                             {date}
                                                         </p>
 

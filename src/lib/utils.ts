@@ -38,3 +38,21 @@ export const getStatusColor = (status: string) => {
     }
 };
 
+/**
+ * Lấy trạng thái mới nhất từ orderShippingEvents (nếu có), fallback về order.status
+ */
+export const getLatestStatus = (order: {
+    status: string;
+    orderShippingEvents?: Array<{
+        shippingStatus?: {
+            status?: string;
+        };
+    }>;
+}): string => {
+    if (order.orderShippingEvents && order.orderShippingEvents.length > 0) {
+        const lastEvent =
+            order.orderShippingEvents[order.orderShippingEvents.length - 1];
+        return lastEvent.shippingStatus?.status || order.status;
+    }
+    return order.status;
+};
