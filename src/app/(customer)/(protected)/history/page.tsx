@@ -17,7 +17,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { getStatusColor, getStatusLabel } from "@/lib/utils";
+import { getStatusColor, getStatusLabel, getLatestStatus } from "@/lib/utils";
 
 export default function OrderHistoryPage() {
     const { user } = useUserStore();
@@ -118,10 +118,10 @@ export default function OrderHistoryPage() {
                                     <td className="p-3">
                                         <span
                                             className={`px-2 py-1 text-xs font-medium rounded-md ${getStatusColor(
-                                                order.status
+                                                getLatestStatus(order)
                                             )}`}
                                         >
-                                            {getStatusLabel(order.status)}
+                                            {getStatusLabel(getLatestStatus(order))}
                                         </span>
                                     </td>
                                     <td className="p-3">
@@ -141,7 +141,7 @@ export default function OrderHistoryPage() {
                                             <EyeIcon className="w-5 h-5 text-blue-600 hover:text-blue-800" />
                                         </button>
 
-                                        {order.status === "wait_confirm" && (
+                                        {getLatestStatus(order) === "wait_confirm" && (
                                             <AlertDialog>
                                                 <AlertDialogTrigger asChild>
                                                     <button
