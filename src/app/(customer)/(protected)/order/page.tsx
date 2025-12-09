@@ -5,7 +5,7 @@ import { useUserStore } from "@/stores/user-store";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
-import { Trash2 } from "lucide-react";
+import { Trash2, Minus, Plus } from "lucide-react";
 import { useDeleteCart, useUpdateCart } from "@/queries/useCart";
 import { useAccountQuery } from "@/queries/useAuth";
 import { useState } from "react";
@@ -16,7 +16,10 @@ export default function OrderPage() {
     const { refetch: refetchAccount } = useAccountQuery();
     const { mutate: updateCart, isPending } = useUpdateCart();
     const { mutate: deleteCart } = useDeleteCart();
-    const [step, setStep] = useState(1); //  1: giỏ hàng, 2: đặt hàng, 3: thanh toán
+    const [step, setStep] = useState(1);
+    const [tempQuantities, setTempQuantities] = useState<
+        Record<number, number>
+    >({});
 
     if (!user) {
         toast.warning("Bạn cần đăng nhập để xem giỏ hàng");
@@ -31,16 +34,110 @@ export default function OrderPage() {
         0
     );
 
-    const handleQuantityChange = (itemId: number, newQuantity: number) => {
+    const handleQuantityChange = (
+        value: number,
+        itemId: number,
+        stockQuantity: number,
+        shouldUpdateAPI = false
+    ) => {
+        if (isNaN(value) || value < 1) {
+            setTempQuantities((prev) => ({ ...prev, [itemId]: 1 }));
+            toast.warning("Số lượng phải lớn hơn 0");
+            return;
+        }
+
+        if (stockQuantity && value > stockQuantity) {
+            toast.error(`Vượt quá số lượng tồn kho (${stockQuantity})`);
+            setTempQuantities((prev) => ({ ...prev, [itemId]: 1 }));
+            return;
+        }
+
+        setTempQuantities((prev) => ({ ...prev, [itemId]: value }));
+
+        // Nếu shouldUpdateAPI = true (từ spinner arrows), gọi API ngay
+        if (shouldUpdateAPI) {
+            const cartId = cart?.id ?? 0;
+            updateCart(
+                { cartId, cartItemId: itemId, quantity: value },
+                {
+                    onSuccess: async () => {
+                        await refetchAccount();
+                        setTempQuantities((prev) => {
+                            const newState = { ...prev };
+                            delete newState[itemId];
+                            return newState;
+                        });
+                    },
+                }
+            );
+        }
+    };
+
+    const handleQuantityButton = (
+        action: "plus" | "minus",
+        itemId: number,
+        currentQuantity: number,
+        stockQuantity: number
+    ) => {
+        const newQuantity =
+            action === "plus" ? currentQuantity + 1 : currentQuantity - 1;
+
         if (newQuantity < 1) {
-            toast.warning("⚠️ Số lượng tối thiểu là 1");
+            toast.warning("Số lượng tối thiểu là 1");
+            return;
+        }
+
+        if (newQuantity > stockQuantity) {
+            toast.error(`Vượt quá số lượng tồn kho (${stockQuantity})`);
             return;
         }
 
         const cartId = cart?.id ?? 0;
         updateCart(
             { cartId, cartItemId: itemId, quantity: newQuantity },
-            { onSuccess: async () => await refetchAccount() }
+            {
+                onSuccess: async () => {
+                    await refetchAccount();
+                    setTempQuantities((prev) => {
+                        const newState = { ...prev };
+                        delete newState[itemId];
+                        return newState;
+                    });
+                },
+            }
+        );
+    };
+
+    const handleBlur = (
+        itemId: number,
+        value: number,
+        stockQuantity: number
+    ) => {
+        if (isNaN(value) || value < 1) {
+            setTempQuantities((prev) => ({ ...prev, [itemId]: 1 }));
+            toast.warning("Số lượng phải lớn hơn 0");
+            return;
+        }
+
+        if (stockQuantity && value > stockQuantity) {
+            toast.error(`Vượt quá số lượng tồn kho (${stockQuantity})`);
+            setTempQuantities((prev) => ({ ...prev, [itemId]: 1 }));
+            return;
+        }
+
+        const cartId = cart?.id ?? 0;
+        updateCart(
+            { cartId, cartItemId: itemId, quantity: value },
+            {
+                onSuccess: async () => {
+                    await refetchAccount();
+                    setTempQuantities((prev) => {
+                        const newState = { ...prev };
+                        delete newState[itemId];
+                        return newState;
+                    });
+                },
+            }
         );
     };
 
@@ -49,6 +146,28 @@ export default function OrderPage() {
         deleteCart(cartItemId, {
             onSuccess: async () => await refetchAccount(),
         });
+    };
+
+    const validateCartBeforeCheckout = () => {
+        for (const item of cartItems) {
+            const currentQuantity = tempQuantities[item.id] ?? item.quantity;
+            const stockQuantity = item.product?.quantity ?? 0;
+
+            if (currentQuantity > stockQuantity) {
+                toast.error(
+                    `Sản phẩm "${item.product?.name}" vượt quá số lượng tồn kho (${stockQuantity})`
+                );
+                setTempQuantities((prev) => ({ ...prev, [item.id]: 1 }));
+                return false;
+            }
+        }
+        return true;
+    };
+
+    const handleProceedToCheckout = () => {
+        if (validateCartBeforeCheckout()) {
+            setStep(2);
+        }
     };
 
     return (
@@ -166,24 +285,109 @@ export default function OrderPage() {
                                     </div>
 
                                     <div className="flex items-center gap-4">
-                                        <Input
-                                            type="number"
-                                            min={1}
-                                            disabled={isPending}
-                                            value={item.quantity}
-                                            onChange={(e) =>
-                                                handleQuantityChange(
-                                                    item.id,
-                                                    Number(e.target.value)
-                                                )
-                                            }
-                                            className="w-20 text-center"
-                                        />
+                                        <div className="flex items-center border rounded-lg overflow-hidden h-10">
+                                            <button
+                                                onClick={() =>
+                                                    handleQuantityButton(
+                                                        "minus",
+                                                        item.id,
+                                                        tempQuantities[
+                                                            item.id
+                                                        ] ?? item.quantity,
+                                                        item.product
+                                                            ?.quantity ?? 0
+                                                    )
+                                                }
+                                                disabled={isPending}
+                                                className="px-3 py-1 text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+                                            >
+                                                <Minus size={16} />
+                                            </button>
+                                            <input
+                                                type="number"
+                                                min={1}
+                                                max={
+                                                    item.product?.quantity ||
+                                                    999
+                                                }
+                                                disabled={isPending}
+                                                value={
+                                                    tempQuantities[item.id] ??
+                                                    item.quantity
+                                                }
+                                                onChange={(e) => {
+                                                    const value = Number(
+                                                        e.target.value
+                                                    );
+                                                    handleQuantityChange(
+                                                        value,
+                                                        item.id,
+                                                        item.product
+                                                            ?.quantity ?? 0,
+                                                        false
+                                                    );
+                                                }}
+                                                onBlur={(e) =>
+                                                    handleBlur(
+                                                        item.id,
+                                                        Number(e.target.value),
+                                                        item.product
+                                                            ?.quantity ?? 0
+                                                    )
+                                                }
+                                                onKeyDown={(e) => {
+                                                    // Bắt sự kiện khi nhấn mũi tên lên/xuống
+                                                    if (
+                                                        e.key === "ArrowUp" ||
+                                                        e.key === "ArrowDown"
+                                                    ) {
+                                                        e.preventDefault();
+                                                        const currentValue =
+                                                            tempQuantities[
+                                                                item.id
+                                                            ] ?? item.quantity;
+                                                        const newValue =
+                                                            e.key === "ArrowUp"
+                                                                ? currentValue +
+                                                                  1
+                                                                : currentValue -
+                                                                  1;
+
+                                                        handleQuantityChange(
+                                                            newValue,
+                                                            item.id,
+                                                            item.product
+                                                                ?.quantity ?? 0,
+                                                            true // Gọi API ngay
+                                                        );
+                                                    }
+                                                }}
+                                                className="w-12 text-center border-x outline-none text-gray-800 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                            />
+                                            <button
+                                                onClick={() =>
+                                                    handleQuantityButton(
+                                                        "plus",
+                                                        item.id,
+                                                        tempQuantities[
+                                                            item.id
+                                                        ] ?? item.quantity,
+                                                        item.product
+                                                            ?.quantity ?? 0
+                                                    )
+                                                }
+                                                disabled={isPending}
+                                                className="px-3 py-1 text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+                                            >
+                                                <Plus size={16} />
+                                            </button>
+                                        </div>
                                         <p className="font-semibold text-gray-700 w-40 text-right mr-2">
                                             Tổng:{" "}
                                             <span className="text-gray-800">
                                                 {(
-                                                    item.quantity *
+                                                    (tempQuantities[item.id] ??
+                                                        item.quantity) *
                                                     (item.product?.price ?? 0)
                                                 ).toLocaleString("vi-VN")}{" "}
                                                 ₫
@@ -222,7 +426,7 @@ export default function OrderPage() {
                             </div>
                             <Button
                                 className="bg-red-500 hover:bg-red-600 w-full text-white text-base font-medium py-5"
-                                onClick={() => setStep(2)}
+                                onClick={handleProceedToCheckout}
                             >
                                 Mua hàng ({cartItems.length})
                             </Button>

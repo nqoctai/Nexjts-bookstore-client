@@ -10,7 +10,7 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
-import { ArrowDownUp, TrendingUp, Clock } from "lucide-react";
+import { ArrowDownUp, TrendingUp, Clock, ShoppingCart } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useProducts } from "@/queries/useProducts";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -107,8 +107,9 @@ export default function ProductList({ filters }: ProductListProps) {
     return (
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
             <div className="flex flex-wrap justify-between items-center mb-6 gap-3">
-                <h2 className="text-lg font-semibold text-gray-800">
-                    🛒 Tất cả sản phẩm{" "}
+                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                    <ShoppingCart className="w-5 h-5 text-blue-600" />
+                    Tất cả sản phẩm{" "}
                     <span className="text-gray-500 text-sm">
                         ({meta?.total || 0} sản phẩm)
                     </span>
@@ -157,11 +158,15 @@ export default function ProductList({ filters }: ProductListProps) {
                     const slug = createSlug(product.name);
                     const productUrl = `/product/${slug}?id=${product.id}`;
 
+                    const isOutOfStock = product.quantity === 0;
+
                     return (
                         <Link
                             href={productUrl}
                             key={product.id}
-                            className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all overflow-hidden group"
+                            className={`bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all overflow-hidden group relative ${
+                                isOutOfStock ? "opacity-75" : ""
+                            }`}
                         >
                             <div className="relative w-full h-56 sm:h-60">
                                 <Image
@@ -178,15 +183,36 @@ export default function ProductList({ filters }: ProductListProps) {
                                     }
                                     alt={product.name || "Product image"}
                                     fill
-                                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                    className={`object-cover group-hover:scale-105 transition-transform duration-300 ${
+                                        isOutOfStock ? "grayscale" : ""
+                                    }`}
                                     unoptimized
                                 />
+                                {isOutOfStock && (
+                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                        <div className="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold text-sm shadow-lg">
+                                            HẾT HÀNG
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                             <div className="p-3 sm:p-4">
-                                <h3 className="font-semibold text-gray-800 line-clamp-2 text-sm sm:text-base group-hover:text-blue-600 transition">
+                                <h3
+                                    className={`font-semibold line-clamp-2 text-sm sm:text-base group-hover:text-blue-600 transition ${
+                                        isOutOfStock
+                                            ? "text-gray-400"
+                                            : "text-gray-800"
+                                    }`}
+                                >
                                     {product.name}
                                 </h3>
-                                <p className="text-red-600 font-bold mt-2 text-sm sm:text-base">
+                                <p
+                                    className={`font-bold mt-2 text-sm sm:text-base ${
+                                        isOutOfStock
+                                            ? "text-gray-400"
+                                            : "text-red-600"
+                                    }`}
+                                >
                                     {product.price?.toLocaleString()} ₫
                                 </p>
                                 <p className="text-xs sm:text-sm text-gray-500">

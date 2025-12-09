@@ -29,7 +29,9 @@ export default function ProductDetailClient({ id }: { id: number }) {
 
     // AI Feedback
     const isRecommended = useAIRecommendStore((state) => state.isRecommended);
-    const getProductPosition = useAIRecommendStore((state) => state.getProductPosition);
+    const getProductPosition = useAIRecommendStore(
+        (state) => state.getProductPosition
+    );
     const feedbackMutation = useAIFeedback();
 
     const [quantity, setQuantity] = useState(1);
@@ -67,7 +69,13 @@ export default function ProductDetailClient({ id }: { id: number }) {
         }
 
         if (!product?.id) {
-            toast.error("❌ Không tìm thấy sản phẩm");
+            toast.error("Không tìm thấy sản phẩm");
+            return;
+        }
+
+        if (product?.quantity && quantity > product.quantity) {
+            toast.error(`Vượt quá số lượng tồn kho (${product.quantity})`);
+            setQuantity(1);
             return;
         }
 
@@ -80,7 +88,6 @@ export default function ProductDetailClient({ id }: { id: number }) {
             {
                 onSuccess: async () => {
                     await refetchAccount();
-                    // Gọi feedback nếu sản phẩm được recommend từ AI
                     sendAddToCartFeedback(product.id);
                 },
             }
@@ -89,13 +96,19 @@ export default function ProductDetailClient({ id }: { id: number }) {
 
     const handleBuyNow = () => {
         if (!user) {
-            toast.warning("🪪 Vui lòng đăng nhập để mua hàng");
+            toast.warning("Vui lòng đăng nhập để mua hàng");
             router.push("/login");
             return;
         }
 
         if (!product?.id) {
-            toast.error("❌ Không tìm thấy sản phẩm");
+            toast.error("Không tìm thấy sản phẩm");
+            return;
+        }
+
+        if (product?.quantity && quantity > product.quantity) {
+            toast.error(`Vượt quá số lượng tồn kho (${product.quantity})`);
+            setQuantity(1);
             return;
         }
 
@@ -108,7 +121,6 @@ export default function ProductDetailClient({ id }: { id: number }) {
             {
                 onSuccess: async () => {
                     await refetchAccount();
-                    // Gọi feedback nếu sản phẩm được recommend từ AI
                     sendAddToCartFeedback(product.id);
                     router.push("/order");
                 },
@@ -125,6 +137,8 @@ export default function ProductDetailClient({ id }: { id: number }) {
             </div>
         );
 
+    const isOutOfStock = product.quantity === 0;
+
     const mainImage =
         activeImage ||
         (product.thumbnail
@@ -134,12 +148,12 @@ export default function ProductDetailClient({ id }: { id: number }) {
     const handleQuantityChange = (value: number) => {
         if (isNaN(value) || value < 1) {
             setQuantity(1);
-            toast.warning("⚠️ Số lượng phải lớn hơn 0");
+            toast.warning("Số lượng phải lớn hơn 0");
             return;
         }
 
         if (product?.quantity && value > product.quantity) {
-            toast.error(`❌ Vượt quá số lượng tồn kho (${product.quantity})`);
+            toast.error(`Vượt quá số lượng tồn kho (${product.quantity})`);
             setQuantity(1);
             return;
         }
@@ -243,56 +257,77 @@ export default function ProductDetailClient({ id }: { id: number }) {
                             </span>
                         </div>
 
-                        <div className="flex items-center gap-3 mb-6 text-base">
-                            <span className="text-gray-700 font-medium">
-                                Số lượng:
-                            </span>
-                            <div className="flex items-center border rounded-lg overflow-hidden h-10">
-                                <button
-                                    onClick={() => handleQuantity("minus")}
-                                    className="px-3 py-1 text-gray-600 hover:bg-gray-100"
-                                >
-                                    <Minus size={16} />
-                                </button>
-                                <input
-                                    type="number"
-                                    min={1}
-                                    value={quantity}
-                                    onChange={(e) =>
-                                        setQuantity(
-                                            Math.max(1, Number(e.target.value))
-                                        )
-                                    }
-                                    className="w-12 text-center border-x outline-none text-gray-800 text-sm"
-                                    onBlur={() =>
-                                        handleQuantityChange(quantity)
-                                    }
-                                />
-                                <button
-                                    onClick={() => handleQuantity("plus")}
-                                    className="px-3 py-1 text-gray-600 hover:bg-gray-100"
-                                >
-                                    <Plus size={16} />
-                                </button>
+                        {isOutOfStock ? (
+                            <div className="bg-red-50 border-2 border-red-500 rounded-lg py-6 px-6 mb-6">
+                                <p className="text-red-600 text-xl font-bold text-center">
+                                    SẢN PHẨM ĐÃ HẾT HÀNG
+                                </p>
+                                <p className="text-gray-600 text-sm text-center mt-2">
+                                    Vui lòng quay lại sau hoặc chọn sản phẩm
+                                    khác
+                                </p>
                             </div>
-                        </div>
+                        ) : (
+                            <>
+                                <div className="flex items-center gap-3 mb-6 text-base">
+                                    <span className="text-gray-700 font-medium">
+                                        Số lượng:
+                                    </span>
+                                    <div className="flex items-center border rounded-lg overflow-hidden h-10">
+                                        <button
+                                            onClick={() =>
+                                                handleQuantity("minus")
+                                            }
+                                            className="px-3 py-1 text-gray-600 hover:bg-gray-100"
+                                        >
+                                            <Minus size={16} />
+                                        </button>
+                                        <input
+                                            type="number"
+                                            min={1}
+                                            max={product?.quantity || 999}
+                                            value={quantity}
+                                            onChange={(e) => {
+                                                const value = Number(
+                                                    e.target.value
+                                                );
+                                                handleQuantityChange(value);
+                                            }}
+                                            className="w-12 text-center border-x outline-none text-gray-800 text-sm"
+                                            onBlur={() =>
+                                                handleQuantityChange(quantity)
+                                            }
+                                        />
+                                        <button
+                                            onClick={() =>
+                                                handleQuantity("plus")
+                                            }
+                                            className="px-3 py-1 text-gray-600 hover:bg-gray-100"
+                                        >
+                                            <Plus size={16} />
+                                        </button>
+                                    </div>
+                                </div>
 
-                        <div className="flex flex-col sm:flex-row gap-3">
-                            <button
-                                onClick={handleAddToCart}
-                                disabled={isAdding}
-                                className="flex items-center justify-center gap-2 border border-red-500 text-red-500 hover:bg-red-50 font-medium py-3 px-6 rounded-md transition"
-                            >
-                                <ShoppingCart size={20} /> Thêm vào giỏ hàng
-                            </button>
-                            <button
-                                onClick={handleBuyNow}
-                                disabled={isAdding}
-                                className="bg-red-500 text-white font-medium py-3 px-6 rounded-md hover:bg-red-600 transition"
-                            >
-                                Mua ngay
-                            </button>
-                        </div>
+                                <div className="flex flex-col sm:flex-row gap-3">
+                                    <button
+                                        onClick={handleAddToCart}
+                                        disabled={isAdding}
+                                        className="flex items-center justify-center gap-2 border border-red-500 text-red-500 hover:bg-red-50 font-medium py-3 px-6 rounded-md transition"
+                                    >
+                                        <ShoppingCart size={20} /> Thêm vào giỏ
+                                        hàng
+                                    </button>
+                                    <button
+                                        onClick={handleBuyNow}
+                                        disabled={isAdding}
+                                        className="bg-red-500 text-white font-medium py-3 px-6 rounded-md hover:bg-red-600 transition"
+                                    >
+                                        Mua ngay
+                                    </button>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

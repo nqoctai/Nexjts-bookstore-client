@@ -75,17 +75,17 @@ export default function UserInfoForm() {
         e.preventDefault();
 
         if (!name.trim()) {
-            toast.error("⚠️ Vui lòng nhập tên hiển thị");
+            toast.error("Vui lòng nhập tên hiển thị");
             return;
         }
 
         if (!phone.trim()) {
-            toast.error("⚠️ Vui lòng nhập số điện thoại");
+            toast.error("Vui lòng nhập số điện thoại");
             return;
         }
 
         if (!user?.id) {
-            toast.error("⚠️ Không tìm thấy tài khoản để cập nhật");
+            toast.error("Không tìm thấy tài khoản để cập nhật");
             return;
         }
 
