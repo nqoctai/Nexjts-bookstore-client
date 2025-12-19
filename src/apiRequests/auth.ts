@@ -9,6 +9,14 @@ import {
     RegisterBodyType,
     RegisterResType,
 } from "@/schemaValidations/auth.schema";
+import {
+    ForgotPasswordEmailBodyType,
+    ForgotPasswordEmailResType,
+    ResendCodeBodyType,
+    ResendCodeResType,
+    ResetPasswordBodyType,
+    ResetPasswordResType,
+} from "@/schemaValidations/forgotPassword.schema";
 
 const authApiRequest = {
     register: (body: Omit<RegisterBodyType, "confirmPassword">) =>
@@ -56,6 +64,43 @@ const authApiRequest = {
             "/api/v1/auth/loginWithGoogle",
             body,
             options
+        ),
+
+    forgotPassword: (body: ForgotPasswordEmailBodyType) =>
+        http.post<ForgotPasswordEmailResType>(
+            "/api/auth/forgot-password",
+            body,
+            {
+                baseUrl: "",
+            }
+        ),
+
+    sForgotPassword: (email: string) =>
+        http.post<ForgotPasswordEmailResType>(
+            `/api/v1/auth/retry-password?email=${encodeURIComponent(email)}`,
+            {}
+        ),
+
+    resendCode: (body: ResendCodeBodyType) =>
+        http.post<ResendCodeResType>("/api/auth/resend-code", body, {
+            baseUrl: "",
+        }),
+
+    sResendCode: (email: string) =>
+        http.post<ResendCodeResType>(
+            `/api/v1/auth/resend-code?email=${encodeURIComponent(email)}`,
+            {}
+        ),
+
+    resetPassword: (body: ResetPasswordBodyType) =>
+        http.post<ResetPasswordResType>("/api/auth/reset-password", body, {
+            baseUrl: "",
+        }),
+
+    sResetPassword: (body: ResetPasswordBodyType) =>
+        http.post<ResetPasswordResType>(
+            "/api/v1/auth/change-password-retry",
+            body
         ),
 };
 

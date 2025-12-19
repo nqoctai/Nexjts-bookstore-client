@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, Heart } from "lucide-react";
 import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
 import Logo_Book from "../../public/images/logo_book.jpg";
 
@@ -177,8 +177,10 @@ export default function FooterCustomer() {
                         - Bản quyền thuộc về The Book Heaven . Mọi quyền được
                         bảo lưu.
                     </p>
-                    <p className="mt-2 sm:mt-0">
-                        Thiết kế với ❤️ bởi{" "}
+                    <p className="mt-2 sm:mt-0 flex items-center justify-center sm:justify-start gap-1">
+                        Thiết kế với{" "}
+                        <Heart className="w-4 h-4 text-red-500 fill-red-500" />{" "}
+                        bởi{" "}
                         <span className="text-blue-600 font-semibold">
                             Đội ngũ The Book Heaven
                         </span>

@@ -25,7 +25,7 @@ import {
     CardDescription,
 } from "@/components/ui/card";
 
-import { BookOpen, Sparkles, Eye, EyeOff } from "lucide-react";
+import { BookOpen, Eye, EyeOff, Sparkles } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 
 import { useLoginGoogleMutation, useLoginMutation } from "@/queries/useAuth";
@@ -92,12 +92,12 @@ export default function LoginForm() {
                 <CardTitle className="text-4xl font-bold text-gray-800">
                     Đăng nhập
                 </CardTitle>
-                <CardDescription className="text-gray-500 text-xl">
+                <CardDescription className="text-gray-500 text-xl flex items-center justify-center gap-2">
                     Chào mừng trở lại với{" "}
                     <span className="font-semibold text-blue-600">
                         The Book Heaven
-                    </span>{" "}
-                    ✨
+                    </span>
+                    <Sparkles className="w-5 h-5 text-yellow-500" />
                 </CardDescription>
             </CardHeader>
 

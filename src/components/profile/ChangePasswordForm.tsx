@@ -35,7 +35,7 @@ export default function ChangePasswordForm() {
         if (changePasswordMutation.isPending) return;
         try {
             await changePasswordMutation.mutateAsync(data);
-            toast.success("✅ Đổi mật khẩu thành công!");
+            toast.success("Đổi mật khẩu thành công!");
             form.reset({
                 email: user?.email || "",
                 oldPassword: "",

@@ -7,7 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
-import { CreditCard, Truck, ArrowLeft, Gift } from "lucide-react";
+import {
+    CreditCard,
+    Truck,
+    ArrowLeft,
+    Gift,
+    ShoppingCart,
+    Loader2,
+} from "lucide-react";
 import { usePromotionsQuery } from "@/queries/usePromotions";
 import { useRouter } from "next/navigation";
 
@@ -39,8 +46,12 @@ export default function CheckoutForm({
 
     // AI Feedback
     const isRecommended = useAIRecommendStore((state) => state.isRecommended);
-    const getProductPosition = useAIRecommendStore((state) => state.getProductPosition);
-    const clearRecommendedProducts = useAIRecommendStore((state) => state.clearRecommendedProducts);
+    const getProductPosition = useAIRecommendStore(
+        (state) => state.getProductPosition
+    );
+    const clearRecommendedProducts = useAIRecommendStore(
+        (state) => state.clearRecommendedProducts
+    );
     const feedbackMutation = useAIFeedback();
 
     const promotions = data?.data?.result || [];
@@ -131,8 +142,7 @@ export default function CheckoutForm({
 
         createOrder(payload, {
             onSuccess: async (res) => {
-                toast.success("🎉 Đặt hàng thành công!");
-                // Gọi feedback transaction cho các sản phẩm được recommend từ AI
+                toast.success("Đặt hàng thành công!");
                 sendTransactionFeedback();
                 await refetchAccount();
                 if (res?.payload?.data?.checkoutUrl) {
@@ -251,7 +261,10 @@ export default function CheckoutForm({
 
                         <div className="flex items-center justify-between border rounded-lg p-3 cursor-pointer hover:bg-gray-50 transition">
                             <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="transfer" id="transfer" />
+                                <RadioGroupItem
+                                    value="transfer"
+                                    id="transfer"
+                                />
                                 <Label
                                     htmlFor="transfer"
                                     className="cursor-pointer"
@@ -305,9 +318,17 @@ export default function CheckoutForm({
                         onClick={handleSubmit}
                         disabled={isPending}
                     >
-                        {isPending
-                            ? "⏳ Đang xử lý..."
-                            : `🛒 Đặt hàng ngay (${cartCount})`}
+                        {isPending ? (
+                            <>
+                                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                Đang xử lý...
+                            </>
+                        ) : (
+                            <>
+                                <ShoppingCart className="mr-2 h-5 w-5" />
+                                Đặt hàng ngay ({cartCount})
+                            </>
+                        )}
                     </Button>
 
                     {onBack && (

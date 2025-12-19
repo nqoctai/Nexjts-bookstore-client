@@ -73,8 +73,9 @@ export default function RegisterForm() {
                     <CardTitle className="text-4xl font-bold text-gray-800">
                         Đăng ký tài khoản
                     </CardTitle>
-                    <CardDescription className="text-gray-500 text-base">
-                        Chào mừng đến với hành trình đọc sách cùng BookStore ✨
+                    <CardDescription className="text-gray-500 text-base flex items-center justify-center gap-2">
+                        Chào mừng đến với hành trình đọc sách cùng BookStore
+                        <Sparkles className="w-4 h-4 text-yellow-500" />
                     </CardDescription>
                 </CardHeader>
 
