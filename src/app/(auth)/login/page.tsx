@@ -28,12 +28,11 @@ export default function LoginPage() {
                         quality={100}
                     />
                     <h2 className="text-6xl font-bold text-gray-800 mb-3 leading-tight">
-                        Khám phá tri thức 📖
+                        Khám phá tri thức
                     </h2>
                     <p className="text-gray-600 text-xl leading-relaxed max-w-xl">
                         Đọc sách, chia sẻ và cùng nhau phát triển. <br />
-                        The Book Heaven là nơi những câu chuyện bắt đầu. <br />
-                        ☆*: .｡. o(≧▽≦)o .｡.:*☆
+                        The Book Heaven là nơi những câu chuyện bắt đầu.
                     </p>
                 </div>
             </div>

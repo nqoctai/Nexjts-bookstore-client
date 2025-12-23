@@ -27,7 +27,7 @@ export async function GET(
 
         return NextResponse.json(payload, { status });
     } catch (error) {
-        console.error("🔥 [API /order/history/:id] Lỗi:", error);
+        console.error("[API /order/history/:id] Lỗi:", error);
 
         if (error instanceof HttpError) {
             return NextResponse.json(error.payload, { status: error.status });

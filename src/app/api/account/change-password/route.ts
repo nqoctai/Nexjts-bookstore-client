@@ -24,7 +24,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json(payload, { status });
     } catch (error) {
-        console.error("🔥 [API /account/change-password] Lỗi:", error);
+        console.error("[API /account/change-password] Lỗi:", error);
 
         if (error instanceof HttpError) {
             return NextResponse.json(error.payload, { status: error.status });

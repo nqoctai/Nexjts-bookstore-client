@@ -23,12 +23,12 @@ export default function NotFoundPage() {
                     404
                 </h1>
                 <h2 className="mt-3 text-2xl font-semibold text-gray-700">
-                    Ôi không! Trang bạn tìm kiếm không tồn tại 😢
+                    Ôi không! Trang bạn tìm kiếm không tồn tại
                 </h2>
                 <p className="mt-3 text-gray-500 max-w-md">
                     Có thể đường dẫn bị sai, trang đã bị xóa, hoặc đang trong
                     quá trình cập nhật. Hãy quay lại và khám phá thêm những cuốn
-                    sách tuyệt vời khác 💙
+                    sách tuyệt vời khác
                 </p>
 
                 <Link

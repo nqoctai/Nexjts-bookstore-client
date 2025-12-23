@@ -19,7 +19,11 @@ import { useUserStore } from "@/stores/user-store";
 import { useRouter } from "next/navigation";
 import { useLogoutMutation } from "@/queries/useAuth";
 import { useSearchStore } from "@/stores/search-store";
-import { useTop5ProductsSold, useAIRecommendation, useAIFeedback } from "@/queries/useDashboard";
+import {
+    useTop5ProductsSold,
+    useAIRecommendation,
+    useAIFeedback,
+} from "@/queries/useDashboard";
 import CartPopover from "./CartPopover";
 import ManageAccountModal from "./profile/ManageAccountModal";
 
@@ -109,7 +113,7 @@ export default function HeaderCustomer() {
         try {
             await logoutMutation.mutateAsync();
         } catch (error) {
-            console.error("❌ Logout failed:", error);
+            console.error("Logout failed:", error);
         }
     };
 
@@ -149,7 +153,10 @@ export default function HeaderCustomer() {
                     </div>
                 </Link>
 
-                <div className="hidden md:flex flex-1 md:max-w-xl lg:max-w-lg relative" ref={searchRef}>
+                <div
+                    className="hidden md:flex flex-1 md:max-w-xl lg:max-w-lg relative"
+                    ref={searchRef}
+                >
                     <div className="flex w-full items-center rounded-xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-all border border-gray-300">
                         <Input
                             value={searchValue}
@@ -173,7 +180,9 @@ export default function HeaderCustomer() {
                             <div className="bg-gradient-to-r from-blue-500 to-cyan-500 px-4 py-3">
                                 <h3 className="flex items-center gap-2 text-white font-semibold">
                                     <TrendingUp className="w-4 h-4" />
-                                    {user ? "Gợi ý cho bạn" : "Sản phẩm bán chạy"}
+                                    {user
+                                        ? "Gợi ý cho bạn"
+                                        : "Sản phẩm bán chạy"}
                                 </h3>
                             </div>
 
@@ -187,15 +196,25 @@ export default function HeaderCustomer() {
                                         <Link
                                             key={product.id}
                                             href={`/product/${product.id}?id=${product.id}`}
-                                            onClick={() => handleSearchProductClick(product.id, product.isFromAI)}
+                                            onClick={() =>
+                                                handleSearchProductClick(
+                                                    product.id,
+                                                    product.isFromAI
+                                                )
+                                            }
                                             className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-blue-50 transition group"
                                         >
-                                            <span className={`w-6 h-6 flex items-center justify-center text-xs font-bold text-white rounded-full ${
-                                                index === 0 ? "bg-yellow-500" :
-                                                index === 1 ? "bg-gray-400" :
-                                                index === 2 ? "bg-amber-600" :
-                                                "bg-blue-500"
-                                            }`}>
+                                            <span
+                                                className={`w-6 h-6 flex items-center justify-center text-xs font-bold text-white rounded-full ${
+                                                    index === 0
+                                                        ? "bg-yellow-500"
+                                                        : index === 1
+                                                        ? "bg-gray-400"
+                                                        : index === 2
+                                                        ? "bg-amber-600"
+                                                        : "bg-blue-500"
+                                                }`}
+                                            >
                                                 {index + 1}
                                             </span>
                                             <div className="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200">
@@ -212,12 +231,17 @@ export default function HeaderCustomer() {
                                                     {product.name}
                                                 </p>
                                                 <p className="text-sm text-red-500 font-bold">
-                                                    {product.price.toLocaleString("vi-VN")}₫
+                                                    {product.price.toLocaleString(
+                                                        "vi-VN"
+                                                    )}
+                                                    ₫
                                                 </p>
                                             </div>
                                             <div className="flex items-center gap-1 text-xs text-orange-500 bg-orange-50 px-2 py-1 rounded-full">
                                                 <Flame size={12} />
-                                                <span className="font-medium">{product.sold}</span>
+                                                <span className="font-medium">
+                                                    {product.sold}
+                                                </span>
                                             </div>
                                         </Link>
                                     );

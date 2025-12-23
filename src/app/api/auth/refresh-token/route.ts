@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import authApiRequest from "@/apiRequests/auth";
 import { HttpError } from "@/lib/http";
 import { cookies } from "next/headers";
@@ -37,7 +37,7 @@ export async function GET(request: Request) {
 
         return response;
     } catch (error) {
-        console.error("❌ Refresh token route error:", error);
+        console.error(" Refresh token route error:", error);
         if (error instanceof HttpError) {
             return NextResponse.json(error.payload, { status: error.status });
         }

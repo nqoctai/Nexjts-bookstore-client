@@ -14,7 +14,7 @@ export async function GET() {
 
         return NextResponse.json(res.payload);
     } catch (error: any) {
-        console.error("❌ Lỗi khi lấy danh mục sản phẩm:", error);
+        console.error("Lỗi khi lấy danh mục sản phẩm:", error);
 
         return NextResponse.json(
             {

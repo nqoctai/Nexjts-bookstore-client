@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { customerApiRequests } from "@/apiRequests/customer";
 import { HttpError } from "@/lib/http";
@@ -25,7 +25,7 @@ export async function PUT(req: Request) {
 
         return NextResponse.json(payload, { status });
     } catch (error) {
-        console.error("🔥 [API /customer] Lỗi:", error);
+        console.error(" [API /customer] Lỗi:", error);
 
         if (error instanceof HttpError) {
             return NextResponse.json(error.payload, { status: error.status });

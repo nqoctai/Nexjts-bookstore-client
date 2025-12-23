@@ -14,9 +14,15 @@ export async function GET() {
 
         return NextResponse.json(res.payload);
     } catch (error: any) {
-        console.error("❌ [API /api/dashboard/get-top5-products-sold] error:", error);
+        console.error(
+            "[API /api/dashboard/get-top5-products-sold] error:",
+            error
+        );
         return NextResponse.json(
-            { message: error?.message || "Lỗi khi lấy top 5 sản phẩm bán chạy" },
+            {
+                message:
+                    error?.message || "Lỗi khi lấy top 5 sản phẩm bán chạy",
+            },
             { status: error?.status || 500 }
         );
     }

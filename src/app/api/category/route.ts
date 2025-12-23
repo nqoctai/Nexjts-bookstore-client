@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import categoryApiRequests from "@/apiRequests/category";
 
 export async function GET() {
@@ -14,7 +14,7 @@ export async function GET() {
 
         return NextResponse.json(res.payload);
     } catch (error: any) {
-        console.error("❌ Lỗi khi lấy thể loại:", error);
+        console.error(" Lỗi khi lấy thể loại:", error);
 
         return NextResponse.json(
             {

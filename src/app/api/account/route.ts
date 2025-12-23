@@ -12,7 +12,7 @@ export async function PUT(req: Request) {
         if (!parsed.success) {
             return NextResponse.json(
                 {
-                    message: "❌ Dữ liệu cập nhật không hợp lệ",
+                    message: "Dữ liệu cập nhật không hợp lệ",
                     errors: parsed.error,
                 },
                 { status: 400 }
@@ -36,14 +36,14 @@ export async function PUT(req: Request) {
 
         return NextResponse.json(payload, { status });
     } catch (error) {
-        console.error("🔥 [API /account] Lỗi cập nhật tài khoản:", error);
+        console.error("[API /account] Lỗi cập nhật tài khoản:", error);
 
         if (error instanceof HttpError) {
             return NextResponse.json(error.payload, { status: error.status });
         }
 
         return NextResponse.json(
-            { message: "❌ Lỗi server khi cập nhật tài khoản" },
+            { message: "Lỗi server khi cập nhật tài khoản" },
             { status: 500 }
         );
     }
