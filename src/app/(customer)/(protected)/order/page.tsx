@@ -10,6 +10,7 @@ import { useDeleteCart, useUpdateCart } from "@/queries/useCart";
 import { useAccountQuery } from "@/queries/useAuth";
 import { useState } from "react";
 import CheckoutForm from "@/components/cart/CheckoutForm";
+import TopProductsSection from "@/components/TopProductsSection";
 
 export default function OrderPage() {
     const { user } = useUserStore();
@@ -457,6 +458,18 @@ export default function OrderPage() {
                     )}
                 </div>
             </div>
+
+            {/* AI Recommendation - Gợi ý sản phẩm trong giỏ hàng */}
+            {step === 1 && cartItems.length > 0 && (
+                <div className="max-w-7xl mx-auto mt-8">
+                    <TopProductsSection
+                        variant="vertical"
+                        title="Sản phẩm gợi ý cho bạn"
+                        position="cart"
+                        maxDisplay={5}
+                    />
+                </div>
+            )}
         </section>
     );
 }
