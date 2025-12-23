@@ -331,16 +331,6 @@ export default function ProductDetailClient({ id }: { id: number }) {
                     </div>
                 </div>
             </div>
-
-            {/* Top 5 / AI Recommendation */}
-            <div className="max-w-screen-xl mx-auto mt-10">
-                <TopProductsSection
-                    variant="vertical"
-                    title="Có thể bạn cũng thích"
-                    position="cart"
-                    maxDisplay={5}
-                />
-            </div>
         </section>
     );
 }
