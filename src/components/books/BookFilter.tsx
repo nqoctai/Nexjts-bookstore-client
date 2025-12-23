@@ -15,6 +15,7 @@ import {
     Package,
 } from "lucide-react";
 import { FilterState } from "@/components/home/HomeClient";
+import { toast } from "sonner";
 
 interface ProductFilterProps {
     onFilterChange: React.Dispatch<React.SetStateAction<FilterState>>;
@@ -32,14 +33,14 @@ export function ProductFilter({ onFilterChange }: ProductFilterProps) {
     const [minPrice, setMinPrice] = useState("");
     const [maxPrice, setMaxPrice] = useState("");
     const [showBookGenres, setShowBookGenres] = useState(true);
+    const [priceError, setPriceError] = useState<string>("");
 
     const productTypeList = productTypes?.payload?.data || [];
     const categoryList = categories?.payload?.data || [];
 
     // Kiểm tra xem có chọn "Sách" trong danh sách không
     const isBookSelected = selectedProductTypes.some(
-        (type) =>
-            type.toLowerCase() === "sách" || type.toLowerCase() === "sach"
+        (type) => type.toLowerCase() === "sách" || type.toLowerCase() === "sach"
     );
 
     const handleProductTypeChange = (typeName: string) => {
@@ -79,6 +80,32 @@ export function ProductFilter({ onFilterChange }: ProductFilterProps) {
     };
 
     const applyPrice = () => {
+        // Kiểm tra số âm trước khi áp dụng
+        const minVal = minPrice ? Number(minPrice) : 0;
+        const maxVal = maxPrice ? Number(maxPrice) : 0;
+
+        if (minPrice && minVal < 0) {
+            toast.error("Giá TỪ không được là số âm! Vui lòng nhập lại.");
+            setMinPrice("");
+            setPriceError("Giá không được là số âm");
+            return;
+        }
+
+        if (maxPrice && maxVal < 0) {
+            toast.error("Giá ĐẾN không được là số âm! Vui lòng nhập lại.");
+            setMaxPrice("");
+            setPriceError("Giá không được là số âm");
+            return;
+        }
+
+        // Kiểm tra giá TỪ phải nhỏ hơn giá ĐẾN
+        if (minPrice && maxPrice && minVal > maxVal) {
+            toast.error("Giá TỪ phải nhỏ hơn hoặc bằng giá ĐẾN!");
+            setPriceError("Giá TỪ phải nhỏ hơn giá ĐẾN");
+            return;
+        }
+
+        setPriceError("");
         onFilterChange((prev) => ({
             ...prev,
             filter: {
@@ -267,23 +294,148 @@ export function ProductFilter({ onFilterChange }: ProductFilterProps) {
                         <div className="flex-1">
                             <input
                                 type="number"
+                                min="0"
                                 placeholder="₫ TỪ"
                                 value={minPrice}
-                                onChange={(e) => setMinPrice(e.target.value)}
-                                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    // Chỉ cho phép rỗng hoặc số dương
+                                    if (value === "") {
+                                        setMinPrice("");
+                                        setPriceError("");
+                                    } else if (
+                                        !value.includes("-") &&
+                                        Number(value) >= 0
+                                    ) {
+                                        setMinPrice(value);
+                                        setPriceError("");
+                                    } else {
+                                        // Không cho phép nhập số âm
+                                        toast.error("Giá không được là số âm!");
+                                        setPriceError(
+                                            "Giá không được là số âm"
+                                        );
+                                    }
+                                }}
+                                onBlur={(e) => {
+                                    const value = e.target.value;
+                                    if (value && Number(value) < 0) {
+                                        toast.error(
+                                            "Giá không được là số âm! Đã reset về 0"
+                                        );
+                                        setMinPrice("");
+                                        setPriceError("");
+                                    }
+                                }}
+                                onKeyDown={(e) => {
+                                    if (
+                                        e.key === "-" ||
+                                        e.key === "e" ||
+                                        e.key === "E" ||
+                                        e.key === "+"
+                                    ) {
+                                        e.preventDefault();
+                                        toast.warning(
+                                            "Vui lòng chỉ nhập số dương!"
+                                        );
+                                    }
+                                }}
+                                onPaste={(e) => {
+                                    const pastedText =
+                                        e.clipboardData.getData("text");
+                                    if (
+                                        Number(pastedText) < 0 ||
+                                        isNaN(Number(pastedText))
+                                    ) {
+                                        e.preventDefault();
+                                        toast.error(
+                                            "Vui lòng chỉ paste số dương!"
+                                        );
+                                    }
+                                }}
+                                className={`w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition ${
+                                    priceError && minPrice
+                                        ? "border-red-500"
+                                        : "border-gray-200"
+                                }`}
                             />
                         </div>
                         <div className="flex items-center text-gray-400">—</div>
                         <div className="flex-1">
                             <input
                                 type="number"
+                                min="0"
                                 placeholder="₫ ĐẾN"
                                 value={maxPrice}
-                                onChange={(e) => setMaxPrice(e.target.value)}
-                                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    // Chỉ cho phép rỗng hoặc số dương
+                                    if (value === "") {
+                                        setMaxPrice("");
+                                        setPriceError("");
+                                    } else if (
+                                        !value.includes("-") &&
+                                        Number(value) >= 0
+                                    ) {
+                                        setMaxPrice(value);
+                                        setPriceError("");
+                                    } else {
+                                        // Không cho phép nhập số âm
+                                        toast.error("Giá không được là số âm!");
+                                        setPriceError(
+                                            "Giá không được là số âm"
+                                        );
+                                    }
+                                }}
+                                onBlur={(e) => {
+                                    const value = e.target.value;
+                                    if (value && Number(value) < 0) {
+                                        toast.error(
+                                            "Giá không được là số âm! Đã reset về 0"
+                                        );
+                                        setMaxPrice("");
+                                        setPriceError("");
+                                    }
+                                }}
+                                onKeyDown={(e) => {
+                                    if (
+                                        e.key === "-" ||
+                                        e.key === "e" ||
+                                        e.key === "E" ||
+                                        e.key === "+"
+                                    ) {
+                                        e.preventDefault();
+                                        toast.warning(
+                                            "Vui lòng chỉ nhập số dương!"
+                                        );
+                                    }
+                                }}
+                                onPaste={(e) => {
+                                    const pastedText =
+                                        e.clipboardData.getData("text");
+                                    if (
+                                        Number(pastedText) < 0 ||
+                                        isNaN(Number(pastedText))
+                                    ) {
+                                        e.preventDefault();
+                                        toast.error(
+                                            "Vui lòng chỉ paste số dương!"
+                                        );
+                                    }
+                                }}
+                                className={`w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition ${
+                                    priceError && maxPrice
+                                        ? "border-red-500"
+                                        : "border-gray-200"
+                                }`}
                             />
                         </div>
                     </div>
+                    {priceError && (
+                        <p className="text-red-500 text-xs mb-2">
+                            {priceError}
+                        </p>
+                    )}
                     <button
                         onClick={applyPrice}
                         className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-2 rounded-lg text-sm font-medium transition shadow-sm"

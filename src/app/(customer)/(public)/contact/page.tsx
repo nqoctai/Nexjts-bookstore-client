@@ -28,47 +28,33 @@ const ContactPage = () => {
                     <div className="rounded-2xl border border-blue-100 bg-blue-50 p-8 shadow-md">
                         <div className="mb-8 space-y-4">
                             <div className="flex items-start space-x-3">
-                                <span className="text-xl text-blue-600">
-                                    📍
+                                <span className="text-xl text-blue-600 font-semibold">
+                                    Địa chỉ:
                                 </span>
                                 <p className="text-gray-700">
-                                    <span className="font-semibold">
-                                        Địa chỉ:
-                                    </span>{" "}
                                     49 Nguyễn Đỗ Cung, phường Tây Thạnh, Quận
                                     Tân Phú, TP. Hồ Chí Minh
                                 </p>
                             </div>
                             <div className="flex items-start space-x-3">
-                                <span className="text-xl text-blue-600">
-                                    📞
+                                <span className="text-xl text-blue-600 font-semibold">
+                                    Điện thoại:
                                 </span>
-                                <p className="text-gray-700">
-                                    <span className="font-semibold">
-                                        Điện thoại:
-                                    </span>{" "}
-                                    0867 173 946
-                                </p>
+                                <p className="text-gray-700">0867 173 946</p>
                             </div>
                             <div className="flex items-start space-x-3">
-                                <span className="text-xl text-blue-600">
-                                    ✉️
+                                <span className="text-xl text-blue-600 font-semibold">
+                                    Email:
                                 </span>
                                 <p className="text-gray-700">
-                                    <span className="font-semibold">
-                                        Email:
-                                    </span>{" "}
                                     contact@nhasachabc.com
                                 </p>
                             </div>
                             <div className="flex items-start space-x-3">
-                                <span className="text-xl text-blue-600">
-                                    ⏰
+                                <span className="text-xl text-blue-600 font-semibold">
+                                    Giờ làm việc:
                                 </span>
                                 <p className="text-gray-700">
-                                    <span className="font-semibold">
-                                        Giờ làm việc:
-                                    </span>{" "}
                                     8:00 - 20:00 (Thứ 2 - CN)
                                 </p>
                             </div>

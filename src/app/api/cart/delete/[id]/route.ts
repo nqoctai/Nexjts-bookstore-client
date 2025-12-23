@@ -13,7 +13,7 @@ export async function DELETE(
 
         if (!cartItemId) {
             return NextResponse.json(
-                { message: "❌ ID không hợp lệ" },
+                { message: "ID không hợp lệ" },
                 { status: 400 }
             );
         }

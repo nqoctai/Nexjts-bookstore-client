@@ -43,7 +43,7 @@ export async function POST() {
 
         return response;
     } catch (error) {
-        console.error("❌ Logout route error:", error);
+        console.error(" Logout route error:", error);
         if (error instanceof HttpError) {
             return NextResponse.json(error.payload, { status: error.status });
         }

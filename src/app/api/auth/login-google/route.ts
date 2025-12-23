@@ -22,7 +22,7 @@ export async function POST(request: Request) {
             idToken,
         });
 
-        console.log("🔥 BACKEND GOOGLE LOGIN:", payload);
+        console.log(" BACKEND GOOGLE LOGIN:", payload);
 
         if (payload?.data?.account?.role === "ADMIN") {
             return NextResponse.json(
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
 
         return response;
     } catch (error) {
-        console.error("🔥 Login Google Error:", error);
+        console.error(" Login Google Error:", error);
 
         if (error instanceof HttpError) {
             return NextResponse.json(error.payload, { status: error.status });

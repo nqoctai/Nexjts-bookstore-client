@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 /* ======================
-   🛒 CREATE ORDER
+    CREATE ORDER
 ====================== */
 export const CreateOrderBody = z.object({
     accountId: z.number().min(1, "Thiếu mã tài khoản"),
@@ -63,7 +63,7 @@ export type CreateOrderBodyType = z.infer<typeof CreateOrderBody>;
 export type CreateOrderResType = z.infer<typeof CreateOrderRes>;
 
 /* ======================
-   📦 COMMON SCHEMAS
+    COMMON SCHEMAS
 ====================== */
 export const ProductSchema = z.object({
     id: z.number(),
@@ -132,7 +132,7 @@ export const CustomerSchema = z.object({
 });
 
 /* ======================
-   📜 GET ORDER HISTORY
+    GET ORDER HISTORY
 ====================== */
 export const OrderHistoryItemSchema = z.object({
     id: z.number(),
