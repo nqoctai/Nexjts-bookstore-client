@@ -24,12 +24,11 @@ export default function RegisterPage() {
                         quality={100}
                     />
                     <h2 className="text-5xl font-bold text-gray-800 mb-4 leading-tight">
-                        The Book Heaven{" "}
-                        <span className="text-blue-600">📚</span>
+                        The Book Heaven
                     </h2>
                     <p className="text-gray-600 text-xl leading-relaxed max-w-xl">
                         Tham gia cộng đồng nơi tri thức và đam mê đọc sách giao
-                        hòa. Mỗi trang sách là một hành trình mới ✨
+                        hòa. Mỗi trang sách là một hành trình mới
                     </p>
                 </div>
             </div>

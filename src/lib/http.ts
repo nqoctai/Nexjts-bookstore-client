@@ -24,14 +24,14 @@ const isClient = typeof window !== "undefined";
 
 const handleRefreshToken = async (): Promise<string | null> => {
     try {
-        console.log("%c🔄 Gọi API refresh token...", "color: orange;");
+        console.log("%c Gọi API refresh token...", "color: orange;");
         const res = await fetch("/api/auth/refresh-token", {
             method: "GET",
             credentials: "include",
         });
 
         if (!res.ok) {
-            console.warn("❌ Refresh token thất bại:", res.status);
+            console.warn(" Refresh token thất bại:", res.status);
             return null;
         }
 
@@ -40,13 +40,13 @@ const handleRefreshToken = async (): Promise<string | null> => {
 
         if (newAccessToken && isClient) {
             localStorage.setItem("access_token", newAccessToken);
-            console.log("%c✅ Refresh token thành công!", "color: green;");
+            console.log("%c Refresh token thành công!", "color: green;");
             return newAccessToken;
         }
 
         return null;
     } catch (err) {
-        console.error("❌ Lỗi khi refresh token:", err);
+        console.error(" Lỗi khi refresh token:", err);
         return null;
     }
 };
@@ -108,14 +108,14 @@ const request = async <T>(
         !isRetry
     ) {
         console.warn(
-            "%c⚠️ Token hết hạn hoặc thiếu, đang gọi refresh...",
+            "%c Token hết hạn hoặc thiếu, đang gọi refresh...",
             "color: orange;"
         );
         const newToken = await handleRefreshToken();
 
         if (newToken) {
             console.log(
-                "%c✅ Refresh thành công, retry lại request với token mới...",
+                "%c Refresh thành công, retry lại request với token mới...",
                 "color: green;"
             );
 
@@ -131,7 +131,7 @@ const request = async <T>(
             // Retry lại request, set isRetry = true để tránh lặp vô hạn
             return request<T>(method, url, newOptions, true);
         } else {
-            // console.log("%c❌ Refresh thất bại, cần login lại!", "color: red;");
+            // console.log("%c Refresh thất bại, cần login lại!", "color: red;");
             if (isClient) localStorage.removeItem("access_token");
             throw new HttpError(401, payload, "Phiên đăng nhập đã hết hạn");
         }

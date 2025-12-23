@@ -3,17 +3,24 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useTop5ProductsSold, useAIRecommendation, useAIFeedback } from "@/queries/useDashboard";
+import {
+    useTop5ProductsSold,
+    useAIRecommendation,
+    useAIFeedback,
+} from "@/queries/useDashboard";
 import { useUserStore } from "@/stores/user-store";
 import { useAIRecommendStore } from "@/stores/ai-recommend-store";
 import { Flame, Zap, ChevronLeft, ChevronRight } from "lucide-react";
-import { Top5ProductItemType, AIRecommendProductType } from "@/schemaValidations/dashboard.schema";
+import {
+    Top5ProductItemType,
+    AIRecommendProductType,
+} from "@/schemaValidations/dashboard.schema";
 
 interface TopProductsSectionProps {
     variant?: "horizontal" | "vertical" | "compact";
     title?: string;
     position?: "home" | "search" | "cart";
-    maxDisplay?: number; 
+    maxDisplay?: number;
 }
 
 // Unified product type để dùng chung
@@ -48,7 +55,6 @@ function convertAIProduct(product: AIRecommendProductType): UnifiedProduct {
         isFromAI: true, // Đánh dấu từ AI
     };
 }
-
 
 function ProductCardVertical({
     product,
@@ -85,12 +91,17 @@ function ProductCardVertical({
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
                     unoptimized
                 />
-                <div className={`absolute top-0 left-0 w-8 h-8 flex items-center justify-center text-white font-bold text-sm ${
-                    rank === 1 ? "bg-gradient-to-br from-yellow-400 to-orange-500" :
-                    rank === 2 ? "bg-gradient-to-br from-gray-300 to-gray-500" :
-                    rank === 3 ? "bg-gradient-to-br from-amber-600 to-amber-800" :
-                    "bg-gradient-to-br from-blue-400 to-blue-600"
-                }`}>
+                <div
+                    className={`absolute top-0 left-0 w-8 h-8 flex items-center justify-center text-white font-bold text-sm ${
+                        rank === 1
+                            ? "bg-gradient-to-br from-yellow-400 to-orange-500"
+                            : rank === 2
+                            ? "bg-gradient-to-br from-gray-300 to-gray-500"
+                            : rank === 3
+                            ? "bg-gradient-to-br from-amber-600 to-amber-800"
+                            : "bg-gradient-to-br from-blue-400 to-blue-600"
+                    }`}
+                >
                     {rank}
                 </div>
                 {rank <= 3 && (
@@ -152,12 +163,17 @@ function ProductCardCompact({
             onClick={handleClick}
             className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition group"
         >
-            <span className={`w-5 h-5 flex items-center justify-center text-xs font-bold text-white rounded-full ${
-                rank === 1 ? "bg-yellow-500" :
-                rank === 2 ? "bg-gray-400" :
-                rank === 3 ? "bg-amber-600" :
-                "bg-blue-500"
-            }`}>
+            <span
+                className={`w-5 h-5 flex items-center justify-center text-xs font-bold text-white rounded-full ${
+                    rank === 1
+                        ? "bg-yellow-500"
+                        : rank === 2
+                        ? "bg-gray-400"
+                        : rank === 3
+                        ? "bg-amber-600"
+                        : "bg-blue-500"
+                }`}
+            >
                 {rank}
             </span>
             <div className="relative w-10 h-10 rounded-md overflow-hidden flex-shrink-0 border">
@@ -193,16 +209,15 @@ export default function TopProductsSection({
 }: TopProductsSectionProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const user = useUserStore((state) => state.user);
-    const addRecommendedProducts = useAIRecommendStore((state) => state.addRecommendedProducts);
+    const addRecommendedProducts = useAIRecommendStore(
+        (state) => state.addRecommendedProducts
+    );
     const feedbackMutation = useAIFeedback();
 
-    
     const customerId = user?.customer?.id || 0;
 
- 
     const { data: top5Data, isLoading: top5Loading } = useTop5ProductsSold();
 
-  
     const { data: aiData, isLoading: aiLoading } = useAIRecommendation(
         {
             customerId: customerId,
@@ -214,7 +229,6 @@ export default function TopProductsSection({
 
     const isLoading = user ? aiLoading : top5Loading;
 
-    
     const products: UnifiedProduct[] = user
         ? (aiData?.payload?.data || []).map(convertAIProduct)
         : (top5Data?.payload?.data || []).map(convertTop5Product);
@@ -227,7 +241,6 @@ export default function TopProductsSection({
         }
     }, [user, aiData, position, addRecommendedProducts]);
 
-  
     const handleProductClick = (productId: number) => {
         if (user && customerId) {
             feedbackMutation.mutate({
@@ -243,7 +256,10 @@ export default function TopProductsSection({
     const totalProducts = products.length;
     const canScrollLeft = currentIndex > 0;
     const canScrollRight = currentIndex + maxDisplay < totalProducts;
-    const displayProducts = products.slice(currentIndex, currentIndex + maxDisplay);
+    const displayProducts = products.slice(
+        currentIndex,
+        currentIndex + maxDisplay
+    );
 
     const handlePrev = () => {
         if (canScrollLeft) {
@@ -253,7 +269,9 @@ export default function TopProductsSection({
 
     const handleNext = () => {
         if (canScrollRight) {
-            setCurrentIndex(Math.min(totalProducts - maxDisplay, currentIndex + maxDisplay));
+            setCurrentIndex(
+                Math.min(totalProducts - maxDisplay, currentIndex + maxDisplay)
+            );
         }
     };
 
@@ -266,7 +284,10 @@ export default function TopProductsSection({
                 <div className="bg-gradient-to-b from-blue-50 to-white p-4">
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                         {[...Array(5)].map((_, i) => (
-                            <div key={i} className="bg-gray-200 rounded-xl h-64 animate-pulse"></div>
+                            <div
+                                key={i}
+                                className="bg-gray-200 rounded-xl h-64 animate-pulse"
+                            ></div>
                         ))}
                     </div>
                 </div>
@@ -291,10 +312,8 @@ export default function TopProductsSection({
         );
     }
 
-   
     return (
         <div className="rounded-2xl overflow-hidden shadow-lg">
-        
             <div className="bg-gradient-to-r from-blue-500 via-blue-600 to-cyan-500 px-4 md:px-6 py-4">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -303,15 +322,6 @@ export default function TopProductsSection({
                             <span className="text-white font-bold text-lg uppercase tracking-wide">
                                 {user ? title : "Sản phẩm bán chạy"}
                             </span>
-                        </div>
-                        <div className="hidden sm:flex items-center gap-1">
-                            {[...Array(3)].map((_, i) => (
-                                <Flame
-                                    key={i}
-                                    className="w-5 h-5 text-yellow-400 animate-bounce"
-                                    style={{ animationDelay: `${i * 0.1}s` }}
-                                />
-                            ))}
                         </div>
                     </div>
 

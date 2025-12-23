@@ -432,8 +432,8 @@ export function ProductFilter({ onFilterChange }: ProductFilterProps) {
                         </div>
                     </div>
                     {priceError && (
-                        <p className="text-red-500 text-xs mb-2 flex items-center gap-1">
-                            <span>⚠️</span> {priceError}
+                        <p className="text-red-500 text-xs mb-2">
+                            {priceError}
                         </p>
                     )}
                     <button

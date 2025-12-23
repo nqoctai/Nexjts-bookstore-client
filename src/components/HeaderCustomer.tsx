@@ -109,7 +109,7 @@ export default function HeaderCustomer() {
         try {
             await logoutMutation.mutateAsync();
         } catch (error) {
-            console.error("❌ Logout failed:", error);
+            console.error(" Logout failed:", error);
         }
     };
 
