@@ -32,8 +32,7 @@ export default function LoginPage() {
                     </h2>
                     <p className="text-gray-600 text-xl leading-relaxed max-w-xl">
                         Đọc sách, chia sẻ và cùng nhau phát triển. <br />
-                        The Book Heaven là nơi những câu chuyện bắt đầu. <br />
-                        ☆*: .｡. o(≧▽≦)o .｡.:*☆
+                        The Book Heaven là nơi những câu chuyện bắt đầu.
                     </p>
                 </div>
             </div>

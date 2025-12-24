@@ -24,7 +24,7 @@ export async function GET(req: Request) {
 
         return NextResponse.json(payload, { status });
     } catch (error) {
-        console.error(" [API /promotions] Lỗi:", error);
+        console.error("[API /promotions] Lỗi:", error);
 
         // Xử lý lỗi từ HttpError (backend trả về)
         if (error instanceof HttpError) {

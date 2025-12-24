@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json(res.payload, { status: res.status });
     } catch (error: any) {
-        console.error(" Lỗi upload file:", error);
+        console.error("Lỗi upload file:", error);
 
         return NextResponse.json(
             {

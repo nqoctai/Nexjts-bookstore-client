@@ -20,7 +20,7 @@ export async function GET(request: Request) {
     // Nếu một trong hai token bị mất → trả 401 để FE refresh
     if (!cookieToken || !headerToken) {
         console.warn(
-            " Token mất đồng bộ (cookie/local) → trả 401 để FE refresh"
+            "Token mất đồng bộ (cookie/local) → trả 401 để FE refresh"
         );
         return NextResponse.json(
             { data: { account: null }, message: "Token mất đồng bộ" },

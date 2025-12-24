@@ -25,7 +25,7 @@ export async function PUT(req: Request) {
 
         return NextResponse.json(payload, { status });
     } catch (error) {
-        console.error(" [API /order/update] Lỗi:", error);
+        console.error("[API /order/update] Lỗi:", error);
 
         if (error instanceof HttpError) {
             return NextResponse.json(error.payload, { status: error.status });

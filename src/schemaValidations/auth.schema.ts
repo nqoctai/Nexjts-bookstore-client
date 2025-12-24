@@ -35,7 +35,7 @@ export const ProductSchema = z.object({
     ),
 });
 
-//  ĐỔI: book → product
+// ĐỔI: book → product
 const CartItemSchema = z.object({
     id: z.number(),
     quantity: z.number(),

@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
 
         return NextResponse.json(res.payload);
     } catch (error: any) {
-        console.error(" [API /api/product] error:", error);
+        console.error("[API /api/product] error:", error);
         return NextResponse.json(
             { message: error?.message || "Lỗi khi lấy danh sách sản phẩm" },
             { status: error?.status || 500 }

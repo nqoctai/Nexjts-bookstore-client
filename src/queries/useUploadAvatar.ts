@@ -13,12 +13,12 @@ export const useUploadAvatar = () => {
         onError: (error: any) => {
             if (error?.status === 401) {
                 toast.error(
-                    " Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại!"
+                    "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại!"
                 );
             } else {
                 toast.error(
                     error?.message ||
-                        " Upload avatar thất bại, vui lòng thử lại!"
+                        "Upload avatar thất bại, vui lòng thử lại!"
                 );
             }
         },

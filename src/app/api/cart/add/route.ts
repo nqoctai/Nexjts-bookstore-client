@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { cartApiRequests } from "@/apiRequests/cart";
 import { HttpError } from "@/lib/http";
