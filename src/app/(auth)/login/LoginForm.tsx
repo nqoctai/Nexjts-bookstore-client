@@ -67,12 +67,8 @@ export default function LoginForm() {
 
     const handleGoogleLogin = async () => {
         try {
-            // Lấy idToken từ Firebase
             const { idToken } = await loginWithGoogle();
-            console.log("Google ID Token:", idToken);
-            console.log("Token length:", idToken.length);
 
-            // Gửi token lên backend
             await googleLoginMutation.mutateAsync({ idToken });
 
             toast.success("Đăng nhập Google thành công!");

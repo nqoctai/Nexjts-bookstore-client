@@ -8,9 +8,11 @@ export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
     const accessToken = request.cookies.get("access_token")?.value;
 
-    let user: any = null;
+    if (privatePaths.some((path) => pathname.startsWith(path))) {
+        if (!accessToken) {
+            return NextResponse.redirect(new URL("/login", request.url));
+        }
 
-    if (accessToken) {
         try {
             const res = await fetch(
                 `${request.nextUrl.origin}/api/auth/account`,
@@ -19,26 +21,52 @@ export async function middleware(request: NextRequest) {
                         cookie: request.headers.get("cookie") || "",
                     },
                     credentials: "include",
+                    cache: "no-store",
                 }
             );
 
-            if (res.ok) {
-                const data = await res.json();
-                user = data?.data?.account || null;
+            if (!res.ok) {
+                return NextResponse.redirect(new URL("/login", request.url));
+            }
+
+            const data = await res.json();
+            const user = data?.data?.account || null;
+
+            if (!user) {
+                return NextResponse.redirect(new URL("/login", request.url));
             }
         } catch (error) {
             console.error("Middleware error:", error);
+            return NextResponse.redirect(new URL("/login", request.url));
         }
     }
 
-    const isAuth = !!user;
+    if (unAuthPaths.some((path) => pathname.startsWith(path))) {
+        if (accessToken) {
+            try {
+                const res = await fetch(
+                    `${request.nextUrl.origin}/api/auth/account`,
+                    {
+                        headers: {
+                            cookie: request.headers.get("cookie") || "",
+                        },
+                        credentials: "include",
+                        cache: "no-store",
+                    }
+                );
 
-    if (privatePaths.some((path) => pathname.startsWith(path)) && !isAuth) {
-        return NextResponse.redirect(new URL("/login", request.url));
-    }
+                if (res.ok) {
+                    const data = await res.json();
+                    const user = data?.data?.account || null;
 
-    if (isAuth && unAuthPaths.some((path) => pathname.startsWith(path))) {
-        return NextResponse.redirect(new URL("/", request.url));
+                    if (user) {
+                        return NextResponse.redirect(new URL("/", request.url));
+                    }
+                }
+            } catch (error) {
+                console.error("Middleware error:", error);
+            }
+        }
     }
 
     return NextResponse.next();

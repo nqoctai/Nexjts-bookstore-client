@@ -70,7 +70,7 @@ export const useLoginGoogleMutation = () => {
             authApiRequest.loginGoogle(body),
 
         onSuccess: async () => {
-            // await queryClient.invalidateQueries({ queryKey: ["account"] });
+            await new Promise((resolve) => setTimeout(resolve, 300));
             await queryClient.refetchQueries({
                 queryKey: ["account"],
             });

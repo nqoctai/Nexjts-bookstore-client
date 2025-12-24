@@ -22,8 +22,6 @@ export async function POST(request: Request) {
             idToken,
         });
 
-        console.log(" BACKEND GOOGLE LOGIN:", payload);
-
         if (payload?.data?.account?.role === "ADMIN") {
             return NextResponse.json(
                 {
@@ -39,10 +37,10 @@ export async function POST(request: Request) {
         const setCookieHeader = headers.get("set-cookie");
 
         cookieStore.set("access_token", accessToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "lax",
             path: "/",
+            httpOnly: true,
+            sameSite: "lax",
+            secure: true,
             expires: new Date(decode.exp * 1000),
         });
 
