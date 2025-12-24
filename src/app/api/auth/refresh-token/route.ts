@@ -17,13 +17,7 @@ export async function GET(request: Request) {
         const accessToken = payload?.data?.access_token;
         const decodeAccessToken = jwt.decode(accessToken) as { exp: number };
 
-        const response = NextResponse.json(payload, { status });
-
-        // Forward cookie refresh_token (nếu BE có gửi lại)
         const setCookieHeader = headers.get("set-cookie");
-        if (setCookieHeader) {
-            response.headers.set("set-cookie", setCookieHeader);
-        }
 
         if (accessToken) {
             cookieStore.set("access_token", accessToken, {
@@ -31,8 +25,14 @@ export async function GET(request: Request) {
                 httpOnly: true,
                 sameSite: "lax",
                 secure: true,
-                expires: decodeAccessToken.exp * 1000,
+                expires: new Date(decodeAccessToken.exp * 1000),
             });
+        }
+
+        const response = NextResponse.json(payload, { status });
+
+        if (setCookieHeader) {
+            response.headers.set("set-cookie", setCookieHeader);
         }
 
         return response;
