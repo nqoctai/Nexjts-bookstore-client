@@ -247,10 +247,9 @@ export default function OrderDetailSheet({
                                             const status =
                                                 event.shippingStatus?.status ||
                                                 "wait_confirm";
-                                            const date = event.shippingStatus
-                                                ?.createdAt
+                                            const date = event.createdAt
                                                 ? new Date(
-                                                      event.shippingStatus.createdAt
+                                                      event.createdAt
                                                   ).toLocaleString("vi-VN")
                                                 : "—";
 
@@ -279,8 +278,11 @@ export default function OrderDetailSheet({
                                                     <div>
                                                         <p
                                                             className={`font-medium ${
-                                                                i === currentIndex
-                                                                    ? getStatusStyles(status).text
+                                                                i ===
+                                                                currentIndex
+                                                                    ? getStatusStyles(
+                                                                          status
+                                                                      ).text
                                                                     : "text-gray-500"
                                                             }`}
                                                         >
@@ -292,15 +294,10 @@ export default function OrderDetailSheet({
                                                             {date}
                                                         </p>
 
-                                                        {event.shippingStatus
-                                                            ?.note && (
+                                                        {event.note && (
                                                             <p className="text-xs text-gray-600 mt-1 italic">
                                                                 Ghi chú:{" "}
-                                                                {
-                                                                    event
-                                                                        .shippingStatus
-                                                                        .note
-                                                                }
+                                                                {event.note}
                                                             </p>
                                                         )}
                                                     </div>
