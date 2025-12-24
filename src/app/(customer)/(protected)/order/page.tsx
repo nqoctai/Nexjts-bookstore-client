@@ -460,7 +460,7 @@ export default function OrderPage() {
             </div>
 
             {/* AI Recommendation - Gợi ý sản phẩm trong giỏ hàng */}
-            {step === 1 && cartItems.length > 0 && (
+            {step === 1 && (
                 <div className="max-w-7xl mx-auto mt-8">
                     <TopProductsSection
                         variant="vertical"

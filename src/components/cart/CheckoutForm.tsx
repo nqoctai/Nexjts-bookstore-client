@@ -55,6 +55,7 @@ export default function CheckoutForm({
     const feedbackMutation = useAIFeedback();
 
     const promotions = data?.data?.result || [];
+    const activePromotions = promotions.filter((promo) => promo.status === "1");
 
     const [formData, setFormData] = useState({
         name: "",
@@ -64,19 +65,25 @@ export default function CheckoutForm({
         promotionId: "",
     });
 
-    const selectedPromo = promotions.find(
+    const selectedPromo = activePromotions.find(
         (promo) => promo.id === Number(formData.promotionId)
     );
 
     let discountedPrice = totalPrice;
     let discountAmount = 0;
     if (selectedPromo) {
-        if (selectedPromo.promotionType === "percent") {
-            discountAmount = totalPrice * (selectedPromo.promotionValue / 100);
-            discountedPrice = totalPrice - discountAmount;
-        } else if (selectedPromo.promotionType === "value") {
-            discountAmount = selectedPromo.promotionValue;
-            discountedPrice = Math.max(totalPrice - discountAmount, 0);
+        if (totalPrice < selectedPromo.orderMinValue) {
+            discountedPrice = totalPrice;
+            discountAmount = 0;
+        } else {
+            if (selectedPromo.promotionType === "percent") {
+                discountAmount =
+                    totalPrice * (selectedPromo.promotionValue / 100);
+                discountedPrice = totalPrice - discountAmount;
+            } else if (selectedPromo.promotionType === "value") {
+                discountAmount = selectedPromo.promotionValue;
+                discountedPrice = Math.max(totalPrice - discountAmount, 0);
+            }
         }
     }
 
@@ -86,10 +93,29 @@ export default function CheckoutForm({
         >
     ) => {
         const { id, value } = e.target;
-        setFormData((prev) => ({ ...prev, [id]: value }));
+
+        if (id === "phone") {
+            if (value === "" || /^\d+$/.test(value)) {
+                setFormData((prev) => ({ ...prev, [id]: value }));
+            }
+        } else if (id === "promotionId") {
+            const selectedPromo = activePromotions.find(
+                (promo) => promo.id === Number(value)
+            );
+            if (selectedPromo && totalPrice < selectedPromo.orderMinValue) {
+                toast.error(
+                    `Đơn hàng tối thiểu ${selectedPromo.orderMinValue.toLocaleString(
+                        "vi-VN"
+                    )}₫ để áp dụng mã giảm giá này!`
+                );
+                return;
+            }
+            setFormData((prev) => ({ ...prev, [id]: value }));
+        } else {
+            setFormData((prev) => ({ ...prev, [id]: value }));
+        }
     };
 
-    // Gọi feedback transaction cho các sản phẩm được recommend từ AI
     const sendTransactionFeedback = () => {
         const customerId = user?.customer?.id;
         const cartItems = user?.customer?.cart?.cartItems || [];
@@ -109,7 +135,6 @@ export default function CheckoutForm({
                     }
                 }
             });
-            // Clear recommended products sau khi đã gửi feedback
             clearRecommendedProducts();
         }
     };
@@ -117,6 +142,11 @@ export default function CheckoutForm({
     const handleSubmit = () => {
         if (!formData.name || !formData.phone || !formData.address) {
             toast.warning("Vui lòng nhập đầy đủ thông tin trước khi đặt hàng.");
+            return;
+        }
+
+        if (!/^\d+$/.test(formData.phone)) {
+            toast.error("Số điện thoại chỉ được chứa chữ số");
             return;
         }
 
@@ -219,18 +249,31 @@ export default function CheckoutForm({
                         className="mt-2 w-full border border-gray-300 rounded-lg px-3 py-2 focus-visible:ring-2 focus-visible:ring-pink-400 focus:outline-none bg-white"
                     >
                         <option value="">-- Không áp dụng khuyến mãi --</option>
-                        {promotions.map((promo) => (
-                            <option key={promo.id} value={promo.id}>
-                                {promo.name}{" "}
-                                {promo.promotionType === "percent"
-                                    ? `(-${promo.promotionValue}%)`
-                                    : promo.promotionType === "value"
-                                    ? `(-${promo.promotionValue.toLocaleString(
-                                          "vi-VN"
-                                      )}₫)`
-                                    : ""}
-                            </option>
-                        ))}
+                        {activePromotions.map((promo) => {
+                            const isEligible =
+                                totalPrice >= promo.orderMinValue;
+                            return (
+                                <option
+                                    key={promo.id}
+                                    value={promo.id}
+                                    disabled={!isEligible}
+                                    className={
+                                        !isEligible
+                                            ? "text-gray-400 opacity-50"
+                                            : ""
+                                    }
+                                >
+                                    {promo.name}{" "}
+                                    {promo.promotionType === "percent"
+                                        ? `(-${promo.promotionValue}%)`
+                                        : promo.promotionType === "value"
+                                        ? `(-${promo.promotionValue.toLocaleString(
+                                              "vi-VN"
+                                          )}₫)`
+                                        : ""}
+                                </option>
+                            );
+                        })}
                     </select>
                 </div>
 

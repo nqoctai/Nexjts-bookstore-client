@@ -91,24 +91,6 @@ function ProductCardVertical({
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
                     unoptimized
                 />
-                <div
-                    className={`absolute top-0 left-0 w-8 h-8 flex items-center justify-center text-white font-bold text-sm ${
-                        rank === 1
-                            ? "bg-gradient-to-br from-yellow-400 to-orange-500"
-                            : rank === 2
-                            ? "bg-gradient-to-br from-gray-300 to-gray-500"
-                            : rank === 3
-                            ? "bg-gradient-to-br from-amber-600 to-amber-800"
-                            : "bg-gradient-to-br from-blue-400 to-blue-600"
-                    }`}
-                >
-                    {rank}
-                </div>
-                {rank <= 3 && (
-                    <div className="absolute top-2 right-2 bg-red-500 text-white text-[10px] px-2 py-1 rounded-full flex items-center gap-1 animate-pulse">
-                        <Flame size={10} /> HOT
-                    </div>
-                )}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300" />
             </div>
             <div className="p-3">
@@ -163,19 +145,6 @@ function ProductCardCompact({
             onClick={handleClick}
             className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition group"
         >
-            <span
-                className={`w-5 h-5 flex items-center justify-center text-xs font-bold text-white rounded-full ${
-                    rank === 1
-                        ? "bg-yellow-500"
-                        : rank === 2
-                        ? "bg-gray-400"
-                        : rank === 3
-                        ? "bg-amber-600"
-                        : "bg-blue-500"
-                }`}
-            >
-                {rank}
-            </span>
             <div className="relative w-10 h-10 rounded-md overflow-hidden flex-shrink-0 border">
                 <Image
                     src={imageUrl}
@@ -193,10 +162,7 @@ function ProductCardCompact({
                     {product.price.toLocaleString("vi-VN")}₫
                 </p>
             </div>
-            <div className="flex items-center gap-1 text-xs text-orange-500">
-                <Flame size={12} />
-                {product.sold}
-            </div>
+            <div className="text-xs text-gray-500">Đã bán: {product.sold}</div>
         </Link>
     );
 }

@@ -30,7 +30,6 @@ export async function POST(request: Request) {
 
         const response = NextResponse.json(payload, { status });
 
-        // Forward cookie refresh token từ BE -> Browser
         if (setCookieHeader) {
             response.headers.set("set-cookie", setCookieHeader);
         }
@@ -39,8 +38,7 @@ export async function POST(request: Request) {
             httpOnly: true,
             sameSite: "lax",
             secure: true,
-            // secure: false,
-            expires: decodeAccessToken.exp * 1000,
+            expires: new Date(decodeAccessToken.exp * 1000),
         });
 
         return response;

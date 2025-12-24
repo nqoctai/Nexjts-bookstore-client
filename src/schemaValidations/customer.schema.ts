@@ -12,8 +12,10 @@ export const UpdateCustomerBody = z.object({
         .max(255, "Địa chỉ quá dài"),
     phone: z
         .string()
-        .min(8, "Số điện thoại phải có ít nhất 8 ký tự")
-        .max(15, "Số điện thoại không hợp lệ"),
+        .regex(/^\d*$/, "Số điện thoại chỉ được chứa chữ số")
+        .max(15, "Số điện thoại không hợp lệ")
+        .optional()
+        .or(z.literal("")),
     email: z
         .string()
         .email("Email không hợp lệ")
