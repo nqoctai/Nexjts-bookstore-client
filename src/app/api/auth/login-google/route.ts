@@ -38,13 +38,6 @@ export async function POST(request: Request) {
 
         const setCookieHeader = headers.get("set-cookie");
 
-        const response = NextResponse.json(payload, { status });
-
-        // Forward refresh token từ BE → FE browser
-        if (setCookieHeader) {
-            response.headers.set("set-cookie", setCookieHeader);
-        }
-
         cookieStore.set("access_token", accessToken, {
             httpOnly: true,
             secure: true,
@@ -52,6 +45,12 @@ export async function POST(request: Request) {
             path: "/",
             expires: new Date(decode.exp * 1000),
         });
+
+        const response = NextResponse.json(payload, { status });
+
+        if (setCookieHeader) {
+            response.headers.set("set-cookie", setCookieHeader);
+        }
 
         return response;
     } catch (error) {

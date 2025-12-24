@@ -26,13 +26,7 @@ export async function POST(request: Request) {
         const decodeAccessToken = jwt.decode(accessToken) as { exp: number };
 
         const setCookieHeader = headers.get("set-cookie");
-        console.log("Set-Cookie Header from BE:", setCookieHeader);
 
-        const response = NextResponse.json(payload, { status });
-
-        if (setCookieHeader) {
-            response.headers.set("set-cookie", setCookieHeader);
-        }
         cookieStore.set("access_token", accessToken, {
             path: "/",
             httpOnly: true,
@@ -40,6 +34,12 @@ export async function POST(request: Request) {
             secure: true,
             expires: new Date(decodeAccessToken.exp * 1000),
         });
+
+        const response = NextResponse.json(payload, { status });
+
+        if (setCookieHeader) {
+            response.headers.set("set-cookie", setCookieHeader);
+        }
 
         return response;
     } catch (error) {
