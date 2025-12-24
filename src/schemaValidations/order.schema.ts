@@ -9,7 +9,8 @@ export const CreateOrderBody = z.object({
     address: z.string().min(1, "Địa chỉ giao hàng không được để trống"),
     phone: z
         .string()
-        .min(8, "Số điện thoại không hợp lệ")
+        .regex(/^\d+$/, "Số điện thoại chỉ được chứa chữ số")
+        .min(8, "Số điện thoại phải có ít nhất 8 số")
         .max(15, "Số điện thoại không hợp lệ"),
     email: z.string().email("Email không hợp lệ"),
     totalPrice: z.number().min(0, "Tổng tiền không hợp lệ"),

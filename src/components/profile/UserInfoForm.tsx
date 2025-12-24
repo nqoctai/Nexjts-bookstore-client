@@ -79,8 +79,9 @@ export default function UserInfoForm() {
             return;
         }
 
-        if (!phone.trim()) {
-            toast.error("Vui lòng nhập số điện thoại");
+        // Kiểm tra số điện thoại nếu có nhập
+        if (phone.trim() && !/^\d+$/.test(phone.trim())) {
+            toast.error("Số điện thoại chỉ được chứa chữ số");
             return;
         }
 
@@ -93,7 +94,7 @@ export default function UserInfoForm() {
             id: user.id,
             email,
             username: name,
-            phone,
+            phone: phone.trim() || "",
             avatar: tempAvatar || user.avatar || null,
         };
 
@@ -172,12 +173,19 @@ export default function UserInfoForm() {
 
                     <div>
                         <Label className="text-gray-600 text-sm font-medium mb-2">
-                            <span className="text-red-500">*</span> Số điện
-                            thoại
+                            Số điện thoại
                         </Label>
                         <Input
+                            type="tel"
                             value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                // Chỉ cho phép nhập số
+                                if (value === "" || /^\d+$/.test(value)) {
+                                    setPhone(value);
+                                }
+                            }}
+                            placeholder="Nhập số điện thoại (không bắt buộc)"
                         />
                     </div>
 

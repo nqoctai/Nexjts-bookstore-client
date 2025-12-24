@@ -6,8 +6,11 @@ export const updateAccountBody = z.object({
     username: z.string().min(1, "Tên đăng nhập không được để trống"),
     phone: z
         .string()
-        .min(8, "Số điện thoại phải ít nhất 8 số")
-        .max(15, "Số điện thoại quá dài"),
+        .regex(/^\d*$/, "Số điện thoại chỉ được chứa chữ số")
+        .min(0)
+        .max(15, "Số điện thoại quá dài")
+        .optional()
+        .or(z.literal("")),
     avatar: z.string().nullable().optional(),
 });
 

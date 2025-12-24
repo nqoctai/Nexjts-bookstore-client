@@ -40,12 +40,29 @@ export default function ProductDetailClient({ id }: { id: number }) {
     const handleQuantity = (type: "minus" | "plus") => {
         setQuantity((prev) => {
             if (type === "minus" && prev > 1) return prev - 1;
-            if (type === "plus") return prev + 1;
+
+            if (type === "plus") {
+                const cartItems = user?.customer?.cart?.cartItems || [];
+                const existingCartItem = cartItems.find(
+                    (item) => item.product?.id === product?.id
+                );
+                const quantityInCart = existingCartItem?.quantity || 0;
+                const totalQuantity = quantityInCart + prev + 1;
+
+                if (product?.quantity && totalQuantity > product.quantity) {
+                    toast.warning(
+                        `Không thể thêm! Bạn đã có ${quantityInCart} sản phẩm trong giỏ. Tồn kho chỉ còn ${product.quantity} sản phẩm.`
+                    );
+                    return prev;
+                }
+
+                return prev + 1;
+            }
+
             return prev;
         });
     };
 
-    // Gọi feedback addtocart nếu sản phẩm được recommend từ AI
     const sendAddToCartFeedback = (productId: number) => {
         const customerId = user?.customer?.id;
         if (customerId && isRecommended(productId)) {
@@ -73,8 +90,17 @@ export default function ProductDetailClient({ id }: { id: number }) {
             return;
         }
 
-        if (product?.quantity && quantity > product.quantity) {
-            toast.error(`Vượt quá số lượng tồn kho (${product.quantity})`);
+        const cartItems = user?.customer?.cart?.cartItems || [];
+        const existingCartItem = cartItems.find(
+            (item) => item.product?.id === product.id
+        );
+        const quantityInCart = existingCartItem?.quantity || 0;
+        const totalQuantity = quantityInCart + quantity;
+
+        if (product?.quantity && totalQuantity > product.quantity) {
+            toast.error(
+                `Không thể thêm! Bạn đã có ${quantityInCart} sản phẩm trong giỏ. Tồn kho chỉ còn ${product.quantity} sản phẩm.`
+            );
             setQuantity(1);
             return;
         }
@@ -106,8 +132,17 @@ export default function ProductDetailClient({ id }: { id: number }) {
             return;
         }
 
-        if (product?.quantity && quantity > product.quantity) {
-            toast.error(`Vượt quá số lượng tồn kho (${product.quantity})`);
+        const cartItems = user?.customer?.cart?.cartItems || [];
+        const existingCartItem = cartItems.find(
+            (item) => item.product?.id === product.id
+        );
+        const quantityInCart = existingCartItem?.quantity || 0;
+        const totalQuantity = quantityInCart + quantity;
+
+        if (product?.quantity && totalQuantity > product.quantity) {
+            toast.error(
+                `Không thể mua! Bạn đã có ${quantityInCart} sản phẩm trong giỏ. Tồn kho chỉ còn ${product.quantity} sản phẩm.`
+            );
             setQuantity(1);
             return;
         }

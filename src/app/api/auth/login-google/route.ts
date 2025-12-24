@@ -50,7 +50,7 @@ export async function POST(request: Request) {
             secure: true,
             sameSite: "lax",
             path: "/",
-            expires: decode.exp * 1000,
+            expires: new Date(decode.exp * 1000),
         });
 
         return response;

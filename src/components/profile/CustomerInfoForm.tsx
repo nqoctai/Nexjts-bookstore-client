@@ -22,6 +22,7 @@ export default function CustomerInfoForm() {
     const [gender, setGender] = useState<"Nam" | "Nữ" | "Khác">(
         (user?.customer?.gender as "Nam" | "Nữ" | "Khác") || "Khác"
     );
+    const [phone, setPhone] = useState(user?.phone || "");
 
     const updateCustomerMutation = useUpdateCustomer();
 
@@ -41,15 +42,20 @@ export default function CustomerInfoForm() {
         const formData = new FormData(e.currentTarget);
         const name = formData.get("name") as string;
         const address = formData.get("address") as string;
-        const phone = formData.get("phone") as string;
         const birthday = formData.get("birthday") as string;
+
+        // Kiểm tra số điện thoại nếu có nhập
+        if (phone.trim() && !/^\d+$/.test(phone.trim())) {
+            toast.error("Số điện thoại chỉ được chứa chữ số");
+            return;
+        }
 
         try {
             const res = await updateCustomerMutation.mutateAsync({
                 id: user.customer.id,
                 name,
                 address,
-                phone,
+                phone: phone.trim() || "",
                 email: user.email,
                 birthday,
                 gender,
@@ -61,7 +67,7 @@ export default function CustomerInfoForm() {
                     ...user.customer,
                     name,
                     address,
-                    phone,
+                    phone: phone.trim() || "",
                     birthday,
                     gender,
                 },
@@ -112,9 +118,20 @@ export default function CustomerInfoForm() {
 
             <div>
                 <Label className="text-gray-600 text-sm font-medium mb-2">
-                    <span className="text-red-500">*</span> Số điện thoại
+                    Số điện thoại
                 </Label>
-                <Input name="phone" defaultValue={user.phone || ""} required />
+                <Input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => {
+                        const value = e.target.value;
+                        // Chỉ cho phép nhập số
+                        if (value === "" || /^\d+$/.test(value)) {
+                            setPhone(value);
+                        }
+                    }}
+                    placeholder="Nhập số điện thoại (không bắt buộc)"
+                />
             </div>
 
             <div>
