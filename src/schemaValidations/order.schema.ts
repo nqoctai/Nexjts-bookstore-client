@@ -96,6 +96,8 @@ export const ShippingStatusSchema = z.object({
 export const OrderShippingEventSchema = z.object({
     id: z.number(),
     shippingStatus: ShippingStatusSchema,
+    note: z.string().nullable().optional(),
+    createdAt: z.string().nullable().optional(),
 });
 
 export const PromotionSchema = z
